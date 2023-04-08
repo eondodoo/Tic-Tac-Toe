@@ -257,8 +257,7 @@ body {
   top: 0;
   right: 0;
   max-width: 100%;
-  background-color: #000;
-  opacity: 0.9;
+  background-color: rgba(0, 0, 0, 0.5);
   mix-blend-mode: normal;
   align-items: center;
   justify-content: center;
@@ -273,17 +272,22 @@ body {
   color: var(--silver-hover);
 }
 .winning-message{
+  position: absolute;
+  top: 35%;
   width: 100%;
   height: 266px;
   background-color: var(--semi-dark-navy);
+  opacity: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
-  opacity: 1;
 }
 .winning-text{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
   color: var(--light-blue);
   font-weight: 700;
   font-size: 40px;
