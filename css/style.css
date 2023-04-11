@@ -232,22 +232,35 @@ body {
   margin-top: 20px;
 }
 .footer {
-  color: black;
+  color: var(--dark-navy)
   height: 72px;
   width: 140px;
   text-align: center;
   padding: 24px;
   box-shadow: 1px 10px 4px #10212a;
   border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
 }
 .footer-buttons .you {
   background-color: var(--light-blue);
+  font-size: 14px;
+  padding: 13px 42px;
+}
+.x-score, .o-score, .tie-score{
+  font-size: 24px;
+  font-weight: 700;
 }
 .footer-buttons .ties {
   background-color: var(--silver);
+  font-size: 14px;
+  padding: 13px 42px;
 }
 .footer-buttons .cpu {
   background-color: var(--light-yellow);
+  padding: 13px 42px;
+  font-size: 14px;
 }
 .winning-container{
   display: none;
@@ -497,8 +510,16 @@ body {
     cursor: pointer;
   }
   
-  .square-buttons.x-active .squares:hover{
-      background-color: tomato;
+  .square-buttons.cross .squares:hover{
+    background: url(../assets/icon-x-outline.svg);
+    background-repeat: no-repeat;
+    background-position: 37px;
+  }
+  
+  .square-buttons.circle .squares:hover{
+    background: url(../assets/icon-o-outline.svg);
+    background-repeat: no-repeat;
+    background-position: 37px;
   }
   /* .squares::before,
   .squares::after,
@@ -724,8 +745,16 @@ body {
     cursor: pointer;
   }
   
-  .square-buttons.x-active .squares:hover{
-      background-color: tomato;
+  .square-buttons.cross .squares:hover{
+    background: url(../assets/icon-x-outline.svg);
+    background-repeat: no-repeat;
+    background-position: 37px;
+  }
+  
+  .square-buttons.circle .squares:hover{
+    background: url(../assets/icon-o-outline.svg);
+    background-repeat: no-repeat;
+    background-position: 37px;
   }
   /* .squares::before,
   .squares::after,
@@ -755,17 +784,19 @@ body {
     margin-top: 24px;
   }
   .footer {
-    color: black;
+    color: var(--dark-navy)
     height: 64px;
     width: 96px;
     text-align: center;
     /* padding: 24px; */
     box-shadow: 1px 10px 4px #10212a;
     border-radius: 15px;
+    font-size: 14px;
   }
   .footer-buttons .you {
     background-color: var(--light-blue);
   }
+
   .footer-buttons .ties {
     background-color: var(--silver);
   }
