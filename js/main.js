@@ -3,16 +3,17 @@ const gameCells = ['', '', '', '', '', '', '', '', '']
 const board = document.getElementById('play-area')
 const quit = document.getElementById('quit')
 let infoDisplay = document.getElementById('info')
+let infoModal = document.getElementById('info-modal')
 const square = document.querySelector('.square-buttons')
 const notice = document.querySelector('.winning-notice')
 const winningText = document.querySelector('.winning-text')
 const container = document.getElementById('winning-container')
-const player1 = document.querySelector('.you')
-const player2 = document.querySelector('.cpu')
+const player1 = document.querySelector('.you-score')
+const player2 = document.querySelector('.cpu-score')
 const roundMark = document.getElementById('round-mark')
-let xWins = document.querySelector('.x-score')
-let oWins = document.querySelector('.o-score')
-let ties = document.querySelector('.ties')
+const xWins = document.querySelector('.x-score')
+const oWins = document.querySelector('.o-score')
+const tiesScore = document.querySelector('.tie-score')
 const vsCPU = document.getElementById('vs-cpu')
 const vsPlayer = document.getElementById('vs-player')
 const newRound = document.getElementById('next-round')
@@ -24,14 +25,19 @@ let roundCount = 1
 let currentPlayer = 'cross'
 let p1 = 'o'
 let p2 = 'x'
-player1.innerHTML = 'X (P2)'
-player2.innerHTML = 'O (P1)'
+player1.innerText = 'X (P2)'
+player2.innerText = 'O (P1)'
 let winCombo = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
 ]
 let score = document.querySelector('.score')
+
+
+
+
+
 
 
 // Function to get Game board
@@ -103,11 +109,32 @@ function addTick(e) {
 
     // if O mark is true, return X mark else return O mark and assign it to mark
     currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
+    
     infoDisplay.innerHTML = `${currentPlayer} turn`
+
+
+    // if(currentPlayer=='circle'){
+    //     const currentPlayerMark = document.createElement('img')
+    //     currentPlayerMark.src = './assets/icon-o-outline.svg'
+    //     currentPlayerMark.style.fill = 'var(--silver)'
+    //     currentPlayerMark.style.width = '16px'
+    //     currentPlayerMark.style.height = '16px'
+    //     infoModal.appendChild(currentPlayerMark)
+    //     infoDisplay.innerHTML = ` turn`
+    // }
+    // else if(currentPlayer == 'cross'){
+    //     const currentPlayerMark = document.createElement('img')
+    //     currentPlayerMark.src = './assets/icon-x-outline.svg'
+    //     currentPlayerMark.style.fill = 'var(--silver)'
+    //     currentPlayerMark.style.width = '16px'
+    //     currentPlayerMark.style.height = '16px'
+    //     infoModal.appendChild(currentPlayerMark)
+    //     infoDisplay.innerHTML = ` turn`
+    // }
 
     // Remove event Listener on squares
     e.target.removeEventListener('click', addTick)
-
+    // console.log([...cells].forEach(cell => cell.className))
     checkDraw()
     
 }
@@ -125,13 +152,22 @@ function setHoverState(mark) {
     }
 
 }
-
+// restart function
 function reset() {
     const restart = document.getElementById('restart')
-
     restart.addEventListener('click', () => {
         cells.forEach(cell => {
-            cell.removeChild(cell.firstChild)
+            container.classList.add('show')
+            notice.innerHTML = ''
+            winningText.innerHTML = 'Restart Game'
+            // winningText.style.color = 'var(--silver)'
+            // newRound.innerHTML = 'Yes, restart'
+            // quit.style.width = '139px'
+            // quit.innerHTML = 'No, Cancel'
+            currentPlayer = 'cross'
+            cell.replaceChildren()
+            
+
         })
     })
 
@@ -153,24 +189,18 @@ function crossWins() {
                 markImg.src = './assets/icon-x.svg'
                 notice.innerText = 'PLAYER 1 WINS'
                 roundMark.appendChild(markImg)
-                xWins = document.createElement('div')
-                xWins.classList.add('x-score')
-                xWinCount = xWinCount + 1
+                xWinCount++
                 xWins.innerHTML = xWinCount
-                player1.appendChild(xWins)
                 return
             }
             if (p2 == 'x') {
                 container.classList.add('show')
                 markImg = document.createElement('img')
                 markImg.src = './assets/icon-x.svg'
-                notice.innerText = 'oh no, you lost'
+                notice.innerText = 'PLAYER 2 WINS'
                 roundMark.appendChild(markImg)
-                xWins = document.createElement('div')
-                xWins.classList.add('x-score')
-                xWinCount = xWinCount + 1
+                xWinCount++
                 xWins.innerHTML = xWinCount
-                player1.appendChild(xWins)
             }
         }
     })
@@ -181,19 +211,18 @@ function circleWins() {
         const circleWins = combo.every(index =>
             cells[index].firstChild?.classList.contains('circle'))
         if (circleWins) {
-            // updateScore()
+            // updateScore
+            // oWinCount++
+            // oWins = oWinCount
             if (p1 == 'o') {
                 container.classList.add('show')
                 markImg = document.createElement('img')
                 markImg.src = './assets/icon-o.svg'
                 roundMark.appendChild(markImg)
-                notice.innerText = `Player 1 wins`
-                oWins = document.createElement('div')
+                notice.innerText = `PLAYER 1 WINS`
                 winningText.style.color = 'var(--light-yellow)'
-                oWins.classList.add('o-score')
                 oWinCount = oWinCount + 1
                 oWins.innerHTML = oWinCount
-                player1.appendChild(oWins)
                 return
             }
             if (p2 == 'o') {
@@ -201,26 +230,16 @@ function circleWins() {
                 markImg = document.createElement('img')
                 markImg.src = './assets/icon-o.svg'
                 roundMark.appendChild(markImg)
-                notice.innerText = 'oh no, you lost'
+                notice.innerText = 'PLAYER 2 WINS'
                 winningText.style.color = 'var(--light-yellow)'
-                oWins = document.createElement('div')
-                oWins.classList.add('o-score')
                 oWinCount = oWinCount + 1
-                oWins.innerText = updateScore
-                player2.appendChild(oWins)
+                oWins.innerHTML = oWinCount
                 return
             }
         }
     })
-    //     console.log([...cells].forEach(cell=> console.log(cell.firstChild)))
-    //     console.log( [...cells].every(cell =>
-    //         cell.firstChild?.classList.contains('cross')  || cell.firstChild?.classList.contains('circle')
-    //     ))
 }
-// console.log(
-//     [...cells].every(cell =>
-//         cell.firstChild
-//     ))
+
 // check draw
 function isDraw() {
     return [...cells].every(cell =>{
@@ -237,12 +256,14 @@ const checkWin = () => {
 
 function checkDraw() {
     if (checkWin()) {
+        updateScore()
         endGame(false)
     }
     else if (isDraw()) {
         winningText.style.color = 'var(--silver)';
         winningText.innerText = 'round tied'
-
+        tieCount++
+        tiesScore.innerHTML = tieCount
         endGame(true)
     }
     // console.log('check draw')
@@ -306,24 +327,37 @@ function endGame(draw) {
 function nextRound() {
     newRound.addEventListener('click', () => {
         cells.forEach(cell => {
+            currentPlayer = 'x'
             cell.replaceChildren()
             container.classList.remove('show')
             updateRound()
+            getBoard()
         })
+        console.log('round 2')
     })
 }
+
 function updateRound() {
     roundCount++
 }
 function updateScore() {
-    if (circleWins()) {
-        oWinCount = oWinCount + 1
+    if (checkWin()) {
+        if(circleWins()){
+            console.log('circle heeyy')
+        }
+        else if(crossWins()){
+            console.log('x heyyy')
+        }
     }
-    else if (crossWins()) {
-        xWinCount = xWinCount + 1
-    }
+    // else if (crossWins()) {
+    //     xWinCount = xWinCount + 1
+    //     xWins.innerHTML = xWinCount
+    //     console.log(xWinCount)
+    // }
     else {
-        tieCount = tieCount + 1
+        // tieCount = tieCount + 1
+        tiesScore.innerHTML = tieCount
+        // console.log(tieCount)
     }
 }
 
@@ -348,11 +382,9 @@ function main() {
     toggleSelectionVsCPU()
     getBoard()
     getVersus()
-    reset()
-    setHoverState()
-    checkDraw()
+    changeMark()
     nextRound()
-    quitRound()
+    reset()
 }
 
 main()
@@ -361,7 +393,11 @@ function startGame() {
     currentPlayer = 'cross'
     getBoard()
     setHoverState()
+    reset()
     checkDraw()
+    updateScore()
+
+    quitRound()
 }
 /*
 handlte clivk
