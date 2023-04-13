@@ -2,12 +2,12 @@ const cells = document.querySelectorAll('.squares')
 const gameCells = ['', '', '', '', '', '', '', '', '']
 const board = document.getElementById('play-area')
 const quit = document.getElementById('quit')
-let infoDisplay = document.getElementById('info')
-let infoModal = document.getElementById('info-modal')
+const infoDisplay = document.getElementById('info')
 const square = document.querySelector('.square-buttons')
 const notice = document.querySelector('.winning-notice')
 const winningText = document.querySelector('.winning-text')
 const container = document.getElementById('winning-container')
+const resetContainer = document.getElementById('reset-container')
 const player1 = document.querySelector('.you-score')
 const player2 = document.querySelector('.cpu-score')
 const roundMark = document.getElementById('round-mark')
@@ -109,7 +109,7 @@ function addTick(e) {
 
     // if O mark is true, return X mark else return O mark and assign it to mark
     currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
-    
+
     infoDisplay.innerHTML = `${currentPlayer} turn`
 
 
@@ -157,13 +157,7 @@ function reset() {
     const restart = document.getElementById('restart')
     restart.addEventListener('click', () => {
         cells.forEach(cell => {
-            container.classList.add('show')
-            notice.innerHTML = ''
-            winningText.innerHTML = 'Restart Game'
-            // winningText.style.color = 'var(--silver)'
-            // newRound.innerHTML = 'Yes, restart'
-            // quit.style.width = '139px'
-            // quit.innerHTML = 'No, Cancel'
+            resetContainer.classList.add('show')
             currentPlayer = 'cross'
             cell.replaceChildren()
             
@@ -172,9 +166,15 @@ function reset() {
     })
 
 }
+function cancel(){
+    const cancelButton = document.getElementById('cancel')
+    cancelButton.addEventListener('click', ()=>{
+        resetContainer.style.display = 'none'
+    })
+    // main()
+}
 function getPlayer() {
     return toggleSelection()
-
 }
 
 function crossWins() {
@@ -261,6 +261,7 @@ function checkDraw() {
     }
     else if (isDraw()) {
         winningText.style.color = 'var(--silver)';
+        notice.innerHTML = ''
         winningText.innerText = 'round tied'
         tieCount++
         tiesScore.innerHTML = tieCount
@@ -368,13 +369,13 @@ function quitRound() {
         document.getElementById('board').style.display = 'none';
         cells.forEach(cell => {
             cell.replaceChildren()
-            xWinCount.innerHTML = 0
-            oWinCount.innerHTML = 0
-            tieCount.innerHTML = 0
-            roundCount.innerHTML = 0
-            startGame()
         })
+        xWinCount.innerHTML = '0'
+        oWinCount.innerHTML = '0'
+        tieCount.innerHTML = '0'
+        roundCount.innerHTML = '0'
     })
+    // startGame()
 }
 
 function main() {
@@ -385,6 +386,9 @@ function main() {
     changeMark()
     nextRound()
     reset()
+    cancel()
+    quitRound()
+    updateScore()
 }
 
 main()
@@ -395,8 +399,7 @@ function startGame() {
     setHoverState()
     reset()
     checkDraw()
-    updateScore()
-
+    // updateScore()
     quitRound()
 }
 /*
