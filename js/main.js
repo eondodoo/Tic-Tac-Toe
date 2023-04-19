@@ -17,6 +17,8 @@ const tiesScore = document.querySelector('.tie-score')
 const vsCPU = document.getElementById('vs-cpu')
 const vsPlayer = document.getElementById('vs-player')
 const newRound = document.getElementById('next-round')
+const restart = document.getElementById('restart-game')
+const  markImg = document.createElement('img')
 // infoDisplay = document.innerHTML = 'X turn'
 let xWinCount = 0
 let oWinCount = 0
@@ -38,8 +40,6 @@ let score = document.querySelector('.score')
 
 
 
-
-
 // Function to get Game board
 function getBoard(_cell, index) {
     for (let i = 0; i < cells.length; i++) {
@@ -56,12 +56,14 @@ function getVersus() {
         document.getElementById('new-game-menu').style.display = 'none';
         document.getElementById('board').style.display = 'block';
         toggleSelectionVsCPU()
+        // startGame()
     })
 
     vsPlayer.addEventListener('click', () => {
         document.getElementById('new-game-menu').style.display = 'none';
         document.getElementById('board').style.display = 'block'
         toggleSelection()
+        // startGame()
     })
 }
 // function to change mark from X to O
@@ -132,11 +134,11 @@ function addTick(e) {
     //     infoDisplay.innerHTML = ` turn`
     // }
 
+
     // Remove event Listener on squares
     e.target.removeEventListener('click', addTick)
-    // console.log([...cells].forEach(cell => cell.className))
     checkDraw()
-    
+
 }
 
 // Hover States function
@@ -153,25 +155,37 @@ function setHoverState(mark) {
 
 }
 // restart function
-function reset() {
-    const restart = document.getElementById('restart')
-    restart.addEventListener('click', () => {
-        cells.forEach(cell => {
-            resetContainer.classList.add('show')
-            currentPlayer = 'cross'
-            cell.replaceChildren()
-            
-
-        })
+function resetBoard() {
+    const restartBoard = document.getElementById('restart-board')
+    restartBoard.addEventListener('click', () => {
+        resetContainer.classList.add('show')
     })
 
 }
-function cancel(){
-    const cancelButton = document.getElementById('cancel')
-    cancelButton.addEventListener('click', ()=>{
-        resetContainer.style.display = 'none'
+
+
+function restartBoard() {
+    restart.addEventListener('click', () => {
+        resetContainer.classList.remove('show')
+        cells.forEach(cell=>{
+            if(cell.firstChild){
+                // markImg.parentNode.removeChild()
+                cell.replaceChildren()
+                startGame()
+            }
+            else{
+                console.log('no first child')
+            }
+            // cell.classList.remove('o-active')
+        })
+      
     })
-    // main()
+}
+function cancelRestart() {
+    const cancelButton = document.getElementById('cancel')
+    cancelButton.addEventListener('click', () => {
+        resetContainer.classList.remove('show')
+    })    
 }
 function getPlayer() {
     return toggleSelection()
@@ -185,22 +199,23 @@ function crossWins() {
         if (crossWins) {
             if (p1 == 'x') {
                 container.classList.add('show')
-                markImg = document.createElement('img')
+                const markImg = document.createElement('img')
                 markImg.src = './assets/icon-x.svg'
-                notice.innerText = 'PLAYER 1 WINS'
                 roundMark.appendChild(markImg)
+                notice.innerText = 'PLAYER 1 WINS'
                 xWinCount++
                 xWins.innerHTML = xWinCount
                 return
             }
             if (p2 == 'x') {
                 container.classList.add('show')
-                markImg = document.createElement('img')
+                const markImg = document.createElement('img')
                 markImg.src = './assets/icon-x.svg'
-                notice.innerText = 'PLAYER 2 WINS'
                 roundMark.appendChild(markImg)
+                notice.innerText = 'PLAYER 2 WINS'
                 xWinCount++
                 xWins.innerHTML = xWinCount
+                return
             }
         }
     })
@@ -211,14 +226,14 @@ function circleWins() {
         const circleWins = combo.every(index =>
             cells[index].firstChild?.classList.contains('circle'))
         if (circleWins) {
-            // updateScore
-            // oWinCount++
-            // oWins = oWinCount
+        //    const  markImg = document.createElement('img')
+            markImg.src = './assets/icon-o.svg'
+            roundMark.appendChild(markImg)
             if (p1 == 'o') {
                 container.classList.add('show')
-                markImg = document.createElement('img')
-                markImg.src = './assets/icon-o.svg'
-                roundMark.appendChild(markImg)
+                // markImg = document.createElement('img')
+                // markImg.src = './assets/icon-o.svg'
+                // roundMark.appendChild(markImg)
                 notice.innerText = `PLAYER 1 WINS`
                 winningText.style.color = 'var(--light-yellow)'
                 oWinCount = oWinCount + 1
@@ -227,9 +242,9 @@ function circleWins() {
             }
             if (p2 == 'o') {
                 container.classList.add('show')
-                markImg = document.createElement('img')
-                markImg.src = './assets/icon-o.svg'
-                roundMark.appendChild(markImg)
+                // markImg = document.createElement('img')
+                // markImg.src = './assets/icon-o.svg'
+                // roundMark.appendChild(markImg)
                 notice.innerText = 'PLAYER 2 WINS'
                 winningText.style.color = 'var(--light-yellow)'
                 oWinCount = oWinCount + 1
@@ -242,9 +257,9 @@ function circleWins() {
 
 // check draw
 function isDraw() {
-    return [...cells].every(cell =>{
+    return [...cells].every(cell => {
         return cell.classList.contains('x-active') || cell.classList.contains('o-active')
-})
+    })
 }
 
 // check winning combination
@@ -256,15 +271,9 @@ const checkWin = () => {
 
 function checkDraw() {
     if (checkWin()) {
-        updateScore()
         endGame(false)
     }
     else if (isDraw()) {
-        winningText.style.color = 'var(--silver)';
-        notice.innerHTML = ''
-        winningText.innerText = 'round tied'
-        tieCount++
-        tiesScore.innerHTML = tieCount
         endGame(true)
     }
     // console.log('check draw')
@@ -319,48 +328,42 @@ function toggleSelectionVsCPU() {
 function endGame(draw) {
     if (draw) {
         container.classList.add('show')
+        winningText.style.color = 'var(--silver)';
+        notice.innerHTML = ''
+        winningText.innerText = 'round tied'
+        tieCount++
+        tiesScore.innerHTML = tieCount
     }
-    else {
+    else{
         console.log('win')
     }
 }
 
 function nextRound() {
-    newRound.addEventListener('click', () => {
+    newRound.addEventListener('click', () => { 
+        roundMark.replaceChildren()
+        container.classList.remove('show')
         cells.forEach(cell => {
-            currentPlayer = 'x'
+            if(cell.firstChild){
+                cell.replaceChildren()
+                startGame()
+            }
+            else{
+                startGame()
+            }
+            // cell.classList.remove('o-active')
+            currentPlayer = 'cross'
             cell.replaceChildren()
-            container.classList.remove('show')
             updateRound()
-            getBoard()
         })
-        console.log('round 2')
+        startGame()
     })
 }
 
 function updateRound() {
     roundCount++
 }
-function updateScore() {
-    if (checkWin()) {
-        if(circleWins()){
-            console.log('circle heeyy')
-        }
-        else if(crossWins()){
-            console.log('x heyyy')
-        }
-    }
-    // else if (crossWins()) {
-    //     xWinCount = xWinCount + 1
-    //     xWins.innerHTML = xWinCount
-    //     console.log(xWinCount)
-    // }
-    else {
-        // tieCount = tieCount + 1
-        tiesScore.innerHTML = tieCount
-        // console.log(tieCount)
-    }
-}
+
 
 function quitRound() {
     quit.addEventListener('click', () => {
@@ -370,10 +373,7 @@ function quitRound() {
         cells.forEach(cell => {
             cell.replaceChildren()
         })
-        xWinCount.innerHTML = '0'
-        oWinCount.innerHTML = '0'
-        tieCount.innerHTML = '0'
-        roundCount.innerHTML = '0'
+        startGame()
     })
     // startGame()
 }
@@ -381,32 +381,24 @@ function quitRound() {
 function main() {
     toggleSelection()
     toggleSelectionVsCPU()
-    getBoard()
     getVersus()
     changeMark()
+    getBoard()
+    setHoverState()
+    checkDraw()
     nextRound()
-    reset()
-    cancel()
+    resetBoard()
     quitRound()
-    updateScore()
+    cancelRestart()
+    restartBoard()
 }
 
 main()
 
 function startGame() {
     currentPlayer = 'cross'
-    getBoard()
-    setHoverState()
-    reset()
-    checkDraw()
-    // updateScore()
-    quitRound()
-}
-/*
-handlte clivk
+    cells.forEach(cell => {
 
-1. add tick
-2. check win
-3. check draw
-4. hover
-*/
+        cell.addEventListener('click', main())
+    })
+}
