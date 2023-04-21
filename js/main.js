@@ -18,7 +18,7 @@ const vsCPU = document.getElementById('vs-cpu')
 const vsPlayer = document.getElementById('vs-player')
 const newRound = document.getElementById('next-round')
 const restart = document.getElementById('restart-game')
-const  markImg = document.createElement('img')
+const markImg = document.createElement('img')
 // infoDisplay = document.innerHTML = 'X turn'
 let xWinCount = 0
 let oWinCount = 0
@@ -27,8 +27,8 @@ let roundCount = 1
 let currentPlayer = 'cross'
 let p1 = 'o'
 let p2 = 'x'
-player1.innerText = 'X (P2)'
-player2.innerText = 'O (P1)'
+player1.innerHTML = 'X (P2)'
+player2.innerHTML = 'O (P1)'
 let winCombo = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -163,30 +163,26 @@ function resetBoard() {
 
 }
 
-
 function restartBoard() {
     restart.addEventListener('click', () => {
         resetContainer.classList.remove('show')
-        cells.forEach(cell=>{
-            if(cell.firstChild){
-                // markImg.parentNode.removeChild()
-                cell.replaceChildren()
+        cells.forEach(cell => {
+            if (cell.firstChild) {
+
+                cell.removeChild(cell.firstChild)
                 startGame()
             }
-            else{
-                console.log('no first child')
-            }
-            // cell.classList.remove('o-active')
+            cell.classList.remove('o-active')
         })
-      
     })
 }
 function cancelRestart() {
     const cancelButton = document.getElementById('cancel')
     cancelButton.addEventListener('click', () => {
         resetContainer.classList.remove('show')
-    })    
+    })
 }
+
 function getPlayer() {
     return toggleSelection()
 }
@@ -203,6 +199,7 @@ function crossWins() {
                 markImg.src = './assets/icon-x.svg'
                 roundMark.appendChild(markImg)
                 notice.innerText = 'PLAYER 1 WINS'
+                winningText.style.color = 'var(--light-blue)'
                 xWinCount++
                 xWins.innerHTML = xWinCount
                 return
@@ -213,6 +210,7 @@ function crossWins() {
                 markImg.src = './assets/icon-x.svg'
                 roundMark.appendChild(markImg)
                 notice.innerText = 'PLAYER 2 WINS'
+                winningText.style.color = 'var(--light-blue)'
                 xWinCount++
                 xWins.innerHTML = xWinCount
                 return
@@ -226,14 +224,11 @@ function circleWins() {
         const circleWins = combo.every(index =>
             cells[index].firstChild?.classList.contains('circle'))
         if (circleWins) {
-        //    const  markImg = document.createElement('img')
-            markImg.src = './assets/icon-o.svg'
-            roundMark.appendChild(markImg)
             if (p1 == 'o') {
                 container.classList.add('show')
                 // markImg = document.createElement('img')
-                // markImg.src = './assets/icon-o.svg'
-                // roundMark.appendChild(markImg)
+                markImg.src = './assets/icon-o.svg'
+                roundMark.appendChild(markImg)
                 notice.innerText = `PLAYER 1 WINS`
                 winningText.style.color = 'var(--light-yellow)'
                 oWinCount = oWinCount + 1
@@ -243,8 +238,8 @@ function circleWins() {
             if (p2 == 'o') {
                 container.classList.add('show')
                 // markImg = document.createElement('img')
-                // markImg.src = './assets/icon-o.svg'
-                // roundMark.appendChild(markImg)
+                markImg.src = './assets/icon-o.svg'
+                roundMark.appendChild(markImg)
                 notice.innerText = 'PLAYER 2 WINS'
                 winningText.style.color = 'var(--light-yellow)'
                 oWinCount = oWinCount + 1
@@ -340,20 +335,15 @@ function endGame(draw) {
 }
 
 function nextRound() {
-    newRound.addEventListener('click', () => { 
-        roundMark.replaceChildren()
+    newRound.addEventListener('click', () => {
         container.classList.remove('show')
+        roundMark.replaceChildren()
         cells.forEach(cell => {
-            if(cell.firstChild){
-                cell.replaceChildren()
-                startGame()
+            let firstChild = cell.firstChild
+            if (firstChild) {
+                cell.removeChild(firstChild)
             }
-            else{
-                startGame()
-            }
-            // cell.classList.remove('o-active')
             currentPlayer = 'cross'
-            cell.replaceChildren()
             updateRound()
         })
         startGame()
@@ -364,18 +354,40 @@ function updateRound() {
     roundCount++
 }
 
-
 function quitRound() {
     quit.addEventListener('click', () => {
+        xWins.innerHTML = 0
+        oWins.innerHTML = 0
+        tiesScore.innerHTML = 0
+        roundCount = 0
+        roundMark.replaceChildren()
         container.classList.remove('show')
         document.getElementById('new-game-menu').style.display = 'block';
         document.getElementById('board').style.display = 'none';
         cells.forEach(cell => {
-            cell.replaceChildren()
+            // cell.innerHTML = ''
+            if (cell.firstChild) {
+                let firstChild = cell.firstChild
+                if (firstChild) {
+                    cell.removeChild(firstChild)
+                }
+            }
+            currentPlayer = 'cross'
+            resetScore()
+
         })
-        startGame()
+      startGame()
     })
     // startGame()
+}
+function resetScore(){
+    xWinCount = 0
+    oWinCount = 0
+    tieCount = 0
+
+    xWins.innerHTML = xWinCount
+    oWins.innerHTML = oWinCount
+    tiesScore.innerHTML = tieCount
 }
 
 function main() {
@@ -398,7 +410,6 @@ main()
 function startGame() {
     currentPlayer = 'cross'
     cells.forEach(cell => {
-
         cell.addEventListener('click', main())
     })
 }
