@@ -170,6 +170,13 @@ body {
     border-radius: 10px;
     text-align: center;
   }
+  .info Osvg{
+    transform: scale(0.303);
+    fill: var(--silver);
+  }
+  .info img .crossmark{
+    fill: silver;
+  }
 
   #square-buttons {
     width: 460px;
@@ -321,6 +328,12 @@ body {
     margin-bottom: 44px;
     color: var(--dark-navy);
     font-weight: 700;
+  }
+  .winning-cell{
+    background-color: var(--light-yellow);
+  }
+  .change-mark{
+    fill: var(--dark-navy);
   }
   .quit {
     background-color: var(--silver);
@@ -569,6 +582,25 @@ body {
     box-shadow: inset 0px -8px 0px #10212a;
     border-radius: 10px;
     text-align: center;
+    display: flex;
+    font-size: 16px;
+    text-transform: uppercase;
+    justify-content: center;
+    gap: 12px;
+    align-items: center;
+  }
+  .info img{
+    width: 20px;
+    height: 20px;
+  }
+  .turn{
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto;
+  }
+  .circlemark{
+    display: none;
   }
 
   #square-buttons {
@@ -721,6 +753,12 @@ body {
     margin-bottom: 44px;
     color: var(--dark-navy);
     font-weight: 700;
+  }
+  .winning-cell{
+    background-color: var(--light-yellow);
+  }
+  .change-mark{
+    fill: var(--dark-navy);
   }
   .quit {
     background-color: var(--silver);
@@ -889,6 +927,7 @@ body {
     transform: scale(0.5);
   }
   .Xsvg {
+
     fill: var(--silver);
   }
   .Osvg {
@@ -968,6 +1007,19 @@ body {
     box-shadow: inset 0px -8px 0px #10212a;
     border-radius: 10px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .info img{
+    width: 20px;
+    height: 20px;
+  }
+  .winning-cell{
+    background-color: var(--light-yellow);
   }
 
   #square-buttons {
@@ -1123,6 +1175,13 @@ body {
     font-weight: 700;
     margin-bottom: 44px;
   }
+  .winning-cell{
+    background-color: var(--light-yellow);
+  }
+  .change-mark{
+    fill: var(--dark-navy);
+  }
+
   .quit {
     background-color: var(--silver);
     border-left: 20px;

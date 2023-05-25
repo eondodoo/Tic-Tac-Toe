@@ -19,29 +19,31 @@ const vsPlayer = document.getElementById('vs-player')
 const newRound = document.getElementById('next-round')
 const restart = document.getElementById('restart-game')
 const markImg = document.createElement('img')
-// infoDisplay = document.innerHTML = 'X turn'
+const circlemark = document.querySelector('.circlemark')
+const crossmark = document.querySelector('.crossmark')
 let xWinCount = 0
 let oWinCount = 0
 let tieCount = 0
 let roundCount = 1
 let currentPlayer = 'cross'
 let p1 = 'o'
-let p2 = 'x'
-player1.innerHTML = 'X (P2)'
-player2.innerHTML = 'O (P1)'
+let p2 = 'o'
+let hum = 'O'
+let com = 'X'
+
+
 let winCombo = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
 ]
-let score = document.querySelector('.score')
-
-
+let vsComputer = true
+let gameover = false
 
 
 
 // Function to get Game board
-function getBoard(_cell, index) {
+function getBoard(_cell) {
     for (let i = 0; i < cells.length; i++) {
         let btn = cells[i]
         btn.id = i;
@@ -49,25 +51,28 @@ function getBoard(_cell, index) {
     }
 }
 
-
 // New game function
 function getVersus() {
     vsCPU.addEventListener('click', () => {
         document.getElementById('new-game-menu').style.display = 'none';
         document.getElementById('board').style.display = 'block';
-        toggleSelectionVsCPU()
-        // startGame()
-    })
+        vsComputer = true
+        changeMark()
+        startGameWithCPU()
 
+
+    })
     vsPlayer.addEventListener('click', () => {
         document.getElementById('new-game-menu').style.display = 'none';
         document.getElementById('board').style.display = 'block'
-        toggleSelection()
-        // startGame()
+        vsComputer = false
+        changeMark()
+        startGame()
     })
 }
 // function to change mark from X to O
-function changeMark(e) {
+function changeMark() {
+    // currentPlayer = 'circle'
     const xButton = document.getElementById('x-mark-style')
     const oButton = document.getElementById('o-mark-style')
     xButton.addEventListener('click', () => {
@@ -75,12 +80,42 @@ function changeMark(e) {
         document.querySelector('svg').style.fill = 'var(--dark-navy)'
         document.querySelector('#o').style.fill = 'var(--silver)'
         oButton.classList.remove('mark-style')
+        if (vsComputer === true) {
+            p1 = 'x'
+            p2 = 'o'
+            player1.innerHTML = 'X (YOU)'
+            player2.innerHTML = 'O (CPU)'
+            xWins.innerText = '0'
+        }
+        else if (vsComputer === false) {
+            p1 = 'x'
+            p2 = 'o'
+            player1.innerHTML = 'X (P1)'
+            player2.innerHTML = 'O (P2)'
+            xWins.innerHTML = '0'
+        }
+
     })
     oButton.addEventListener('click', () => {
         oButton.classList.add('mark-style')
         document.querySelector('#o').style.fill = 'var(--dark-navy)'
         document.querySelector('#x').style.fill = 'var(--silver)'
         xButton.classList.remove('mark-style')
+        currentPlayer = 'circle'
+        if (vsComputer == true) {
+            p1 = 'o'
+            p2 = 'x'
+            player1.innerHTML = 'X (CPU)'
+            player2.innerHTML = 'O (YOU)'
+            xWins.innerText = '0'
+        }
+        else if (vsComputer === false) {
+            p1 = 'o'
+            p2 = 'x'
+            player1.innerHTML = 'O (P1)'
+            player2.innerHTML = 'X (P2)'
+            xWins.innerHTML = '0'
+        }
     })
 
 }
@@ -108,38 +143,42 @@ function addTick(e) {
             e.target.appendChild(oMark)
             break;
     }
+    if (checkWin()) {
+        endGame(false)
+    }
+    else if (isDraw()) {
+        endGame(true)
+    }
+    else {
+        currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
+        turn(currentPlayer)
+    }
 
-    // if O mark is true, return X mark else return O mark and assign it to mark
-    currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
-
-    infoDisplay.innerHTML = `${currentPlayer} turn`
-
-
-    // if(currentPlayer=='circle'){
-    //     const currentPlayerMark = document.createElement('img')
-    //     currentPlayerMark.src = './assets/icon-o-outline.svg'
-    //     currentPlayerMark.style.fill = 'var(--silver)'
-    //     currentPlayerMark.style.width = '16px'
-    //     currentPlayerMark.style.height = '16px'
-    //     infoModal.appendChild(currentPlayerMark)
-    //     infoDisplay.innerHTML = ` turn`
-    // }
-    // else if(currentPlayer == 'cross'){
-    //     const currentPlayerMark = document.createElement('img')
-    //     currentPlayerMark.src = './assets/icon-x-outline.svg'
-    //     currentPlayerMark.style.fill = 'var(--silver)'
-    //     currentPlayerMark.style.width = '16px'
-    //     currentPlayerMark.style.height = '16px'
-    //     infoModal.appendChild(currentPlayerMark)
-    //     infoDisplay.innerHTML = ` turn`
-    // }
-
+    if (currentPlayer == 'circle') {
+        circlemark.style.display = 'block'
+        crossmark.style.display = 'none'
+    }
+    if (currentPlayer == 'cross') {
+        crossmark.style.display = 'block'
+        circlemark.style.display = 'none'
+    }
 
     // Remove event Listener on squares
-    e.target.removeEventListener('click', addTick)
-    checkDraw()
-
+    cell.removeEventListener('click', addTick)
+    // checkDraw()
 }
+
+//  who goes next
+function turn(currentPlayer) {
+    if (vsComputer && currentPlayer === 'cross') {
+        setTimeout(aiMove, 500);
+    }
+    else if (vsComputer && currentPlayer === 'circle') {
+        getBoard()
+        setTimeout(aiMove, 500);
+    }
+}
+
 
 // Hover States function
 function setHoverState(mark) {
@@ -166,14 +205,22 @@ function resetBoard() {
 function restartBoard() {
     restart.addEventListener('click', () => {
         resetContainer.classList.remove('show')
+
         cells.forEach(cell => {
             if (cell.firstChild) {
-
                 cell.removeChild(cell.firstChild)
-                startGame()
+                // startGame()
             }
             cell.classList.remove('o-active')
+            cell.classList.remove('x-active')
         })
+        if (vsComputer) {
+            startGameWithCPU()
+        }
+        else {
+            startGame()
+        }
+
     })
 }
 function cancelRestart() {
@@ -186,6 +233,9 @@ function cancelRestart() {
 function getPlayer() {
     return toggleSelection()
 }
+function getComputerPlayer() {
+    return toggleSelectionVsCPU()
+}
 
 function crossWins() {
     getPlayer()
@@ -193,55 +243,94 @@ function crossWins() {
         const crossWins = combo.every(index =>
             cells[index].firstChild?.classList.contains('cross'))
         if (crossWins) {
-            if (p1 == 'x') {
+            if (p1 === 'x') {
                 container.classList.add('show')
-                const markImg = document.createElement('img')
+                // const markImg = document.createElement('img')
                 markImg.src = './assets/icon-x.svg'
                 roundMark.appendChild(markImg)
-                notice.innerText = 'PLAYER 1 WINS'
+                // notice.innerText = `PLAYER 1 WINS`
                 winningText.style.color = 'var(--light-blue)'
+
+                if (player1.innerHTML.includes('YOU')) {
+                    notice.innerText = 'YOU WIN'
+                }
+                else{
+                    notice.innerText = 'PLAYER 1 WINS'
+                }
                 xWinCount++
                 xWins.innerHTML = xWinCount
                 return
             }
-            if (p2 == 'x') {
+            if (p2 === 'x') {
                 container.classList.add('show')
-                const markImg = document.createElement('img')
+                // const markImg = document.createElement('img')
                 markImg.src = './assets/icon-x.svg'
                 roundMark.appendChild(markImg)
-                notice.innerText = 'PLAYER 2 WINS'
+                
                 winningText.style.color = 'var(--light-blue)'
+                if (player2.innerHTML.includes('CPU')) {
+                    notice.innerText = "OH NO, YOU LOST..."
+
+                }
+                else{
+                    notice.innerText = 'PLAYER 2 WINS'
+                }
                 xWinCount++
                 xWins.innerHTML = xWinCount
                 return
             }
+
         }
     })
+
 }
+
 function circleWins() {
     getPlayer()
     winCombo.forEach(combo => {
         const circleWins = combo.every(index =>
             cells[index].firstChild?.classList.contains('circle'))
         if (circleWins) {
-            if (p1 == 'o') {
+            combo.forEach(index => {
+                cells[index].classList.add('winning-cell');
+                console.log(cells[index].firstChild.classList)
+            });
+
+            if (p1 === 'o') {
                 container.classList.add('show')
                 // markImg = document.createElement('img')
                 markImg.src = './assets/icon-o.svg'
                 roundMark.appendChild(markImg)
-                notice.innerText = `PLAYER 1 WINS`
+                // notice.innerText = `PLAYER 1 WINS`
                 winningText.style.color = 'var(--light-yellow)'
+
+                if (player1.innerHTML.includes('CPU')) {
+                    notice.innerText = "YOU WIN"
+                }
+                else{
+                    notice.innerText = `PLAYER 2 WINS`
+                    console.log('hey')
+                }
                 oWinCount = oWinCount + 1
                 oWins.innerHTML = oWinCount
                 return
             }
-            if (p2 == 'o') {
+            if (p2 === 'o') {
                 container.classList.add('show')
                 // markImg = document.createElement('img')
                 markImg.src = './assets/icon-o.svg'
                 roundMark.appendChild(markImg)
-                notice.innerText = 'PLAYER 2 WINS'
+                // notice.innerText = 'PLAYER 2 WINS'
                 winningText.style.color = 'var(--light-yellow)'
+
+                if (player2.innerHTML.includes('YOU')) {
+                    notice.innerText = "YOU WIN"
+
+                }
+                else{
+                    notice.innerText = `PLAYER 1 WINS`
+
+                }
                 oWinCount = oWinCount + 1
                 oWins.innerHTML = oWinCount
                 return
@@ -264,62 +353,59 @@ const checkWin = () => {
 }
 
 
-function checkDraw() {
-    if (checkWin()) {
-        endGame(false)
-    }
-    else if (isDraw()) {
-        endGame(true)
-    }
-    // console.log('check draw')
-}
-
 // choose mark function
 function toggleSelection() {
-    const o = document.getElementById('x-mark-style')
-    const x = document.getElementById('x-mark-style')
 
-    o.addEventListener('click', () => {
-        p1 = 'o'
-        p2 = 'x'
-        player1.innerHTML = 'X (P2)'
-        player2.innerHTML = 'O (P1)'
-        oWins.innerHTML = '0'
-    })
 
-    x.addEventListener('click', () => {
-        p1 = 'x'
-        p2 = 'o'
-        player1.innerHTML = 'X (P1)'
-        player2.innerHTML = 'O (P2)'
-        xWins.innerHTML = '0'
-    })
+    // p1 = 'o'
+    // p2 = 'x'
+    // player1.innerHTML = 'X (P2)'
+    // player2.innerHTML = 'O (P1)'
+    // oWins.innerHTML = '0'
+
+
+    // x.addEventListener('click', () => {
+
+    //     p1 = 'x'
+    //     p2 = 'o'
+    //     player1.innerHTML = 'X (P1)'
+    //     player2.innerHTML = 'O (P2)'
+    //     xWins.innerHTML = '0'
+    // })
+
 
 }
 
 
 function toggleSelectionVsCPU() {
-    const o = document.getElementById('o-mark-style')
-    const x = document.getElementById('x-mark-style')
 
+    // const o = document.getElementById('o-mark-style')
+    // const x = document.getElementById('x-mark-style')
 
-    o.addEventListener('click', () => {
-        p1 = 'o'
-        p2 = 'x'
-        player1.innerHTML = 'X (CPU)'
-        player2.innerHTML = 'O (P1)'
-        xWins.innerText = '0'
-    })
+    // player1.innerHTML = 'X (CPU)'
+    // player2.innerHTML = 'O (YOU)'
 
-    x.addEventListener('click', () => {
-        p1 = 'x'
-        p2 = 'o'
-        player1.innerHTML = 'X (P1)'
-        player2.innerHTML = 'O (CPU)'
-        oWins.innerText = '0'
-    })
+    // o.addEventListener('click', () => {
+
+    //     p1 = 'o'
+    //     p2 = 'x'
+    //     player1.innerHTML = 'X (CPU)'
+    //     player2.innerHTML = 'O (YOU)'
+    //     xWins.innerText = '0'
+
+    // })
+
+    // x.addEventListener('click', () => {
+
+    //     p1 = 'x'
+    //     p2 = 'o'
+    //     player1.innerHTML = 'X (YOU)'
+    //     player2.innerHTML = 'O (CPU)'
+    //     oWins.innerText = '0'
+    // })
 
 }
+// Check if its draw else check win 
 function endGame(draw) {
     if (draw) {
         container.classList.add('show')
@@ -329,24 +415,36 @@ function endGame(draw) {
         tieCount++
         tiesScore.innerHTML = tieCount
     }
-    else{
-        console.log('win')
+    else {
+        checkWin()
     }
+    cells.forEach(cell => cell.removeEventListener('click', addTick))
 }
 
+// Next Round
 function nextRound() {
     newRound.addEventListener('click', () => {
         container.classList.remove('show')
         roundMark.replaceChildren()
         cells.forEach(cell => {
+            cell.classList.remove('o-active')
+            cell.classList.remove('x-active')
             let firstChild = cell.firstChild
             if (firstChild) {
                 cell.removeChild(firstChild)
+                cell.classList.remove('o-active')
+                cell.classList.remove('x-active')
+                cell.classList.remove('winning-cell')
             }
-            currentPlayer = 'cross'
             updateRound()
+            if (vsComputer) {
+                startGameWithCPU()
+            }
+            else {
+                startGame()
+            }
         })
-        startGame()
+
     })
 }
 
@@ -354,6 +452,7 @@ function updateRound() {
     roundCount++
 }
 
+// Quit game
 function quitRound() {
     quit.addEventListener('click', () => {
         xWins.innerHTML = 0
@@ -365,22 +464,27 @@ function quitRound() {
         document.getElementById('new-game-menu').style.display = 'block';
         document.getElementById('board').style.display = 'none';
         cells.forEach(cell => {
-            // cell.innerHTML = ''
             if (cell.firstChild) {
                 let firstChild = cell.firstChild
                 if (firstChild) {
                     cell.removeChild(firstChild)
+                    cell.classList.remove('o-active')
+                    cell.classList.remove('x-active')
                 }
             }
             currentPlayer = 'cross'
             resetScore()
-
         })
-      startGame()
     })
-    // startGame()
+    if (vsComputer) {
+        startGameWithCPU()
+    }
+    else {
+        startGame()
+    }
 }
-function resetScore(){
+// Reset score to zero
+function resetScore() {
     xWinCount = 0
     oWinCount = 0
     tieCount = 0
@@ -390,26 +494,95 @@ function resetScore(){
     tiesScore.innerHTML = tieCount
 }
 
+
+function aiMove() {
+
+    setHoverState(currentPlayer)
+    const emptyCells = [...cells].filter(cell => !cell.firstChild)
+    const index = Math.floor(Math.random() * emptyCells.length)
+    const cell = emptyCells[index]
+
+    switch (currentPlayer) {
+        case 'cross':
+            // if current player is X, append X immage as child 
+            cell.classList.add('x-active')
+            const xMark = document.createElement('img')
+            xMark.classList.add('cross')
+            xMark.id = ('mark')
+            xMark.src = './assets/icon-x.svg';
+            cell.appendChild(xMark)
+            break;
+        case 'circle':
+            // if current player is O, append O immage as child 
+            cell.classList.add('o-active')
+            const oMark = document.createElement('img')
+            oMark.classList.add('circle')
+            oMark.id = ('mark')
+            oMark.src = './assets/icon-o.svg';
+            cell.appendChild(oMark)
+            break;
+    }
+    currentPlayer = currentPlayer === 'cross' ? 'circle' : 'cross'
+    if (currentPlayer == 'circle') {
+        circlemark.style.display = 'block'
+        crossmark.style.display = 'none'
+    }
+    if (currentPlayer == 'cross') {
+        crossmark.style.display = 'block'
+        circlemark.style.display = 'none'
+    }
+
+    // Remove event Listener on squares
+    cell.removeEventListener('click', addTick)
+}
+
+// start game Vs Computer 
+function startGameWithCPU() {
+    switch (currentPlayer) {
+        case 'cross':
+            setHoverState()
+            currentPlayer = 'cross'
+            // turn(currentPlayer)
+            getBoard();
+            cells.forEach(cell => {
+                cell.addEventListener('click', addTick);
+            });
+
+            // turn(currentPlayer)
+            break;
+        case 'circle':
+            currentPlayer = 'cross'
+            setHoverState()
+            getBoard();
+            cells.forEach(cell => {
+                cell.addEventListener('click', addTick);
+            });
+            turn(currentPlayer)
+            break;
+    }
+}
+
+
+
+
+function startGame() {
+    currentPlayer = 'cross'
+    getBoard()
+}
+
 function main() {
-    toggleSelection()
-    toggleSelectionVsCPU()
     getVersus()
     changeMark()
-    getBoard()
     setHoverState()
-    checkDraw()
     nextRound()
     resetBoard()
     quitRound()
     cancelRestart()
     restartBoard()
+    toggleSelectionVsCPU()
+    toggleSelection()
 }
+
 
 main()
 
-function startGame() {
-    currentPlayer = 'cross'
-    cells.forEach(cell => {
-        cell.addEventListener('click', main())
-    })
-}
