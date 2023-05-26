@@ -333,7 +333,7 @@ body {
     background-color: var(--light-yellow);
   }
   .change-mark{
-    fill: var(--dark-navy);
+   background-color: var(--dark-navy) !important;
   }
   .quit {
     background-color: var(--silver);
@@ -757,9 +757,7 @@ body {
   .winning-cell{
     background-color: var(--light-yellow);
   }
-  .change-mark{
-    fill: var(--dark-navy);
-  }
+ 
   .quit {
     background-color: var(--silver);
     border-left: 20px;

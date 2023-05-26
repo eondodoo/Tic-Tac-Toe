@@ -59,8 +59,6 @@ function getVersus() {
         vsComputer = true
         changeMark()
         startGameWithCPU()
-
-
     })
     vsPlayer.addEventListener('click', () => {
         document.getElementById('new-game-menu').style.display = 'none';
@@ -80,20 +78,15 @@ function changeMark() {
         document.querySelector('svg').style.fill = 'var(--dark-navy)'
         document.querySelector('#o').style.fill = 'var(--silver)'
         oButton.classList.remove('mark-style')
-        if (vsComputer === true) {
-            p1 = 'x'
-            p2 = 'o'
-            player1.innerHTML = 'X (YOU)'
-            player2.innerHTML = 'O (CPU)'
-            xWins.innerText = '0'
-        }
-        else if (vsComputer === false) {
-            p1 = 'x'
-            p2 = 'o'
-            player1.innerHTML = 'X (P1)'
-            player2.innerHTML = 'O (P2)'
-            xWins.innerHTML = '0'
-        }
+        currentPlayer = 'cross'
+        // if (vsComputer) {
+        //     toggleSelectionVsCPU()
+        //     console.log('o cpu')
+        // }
+        // else {
+        //     toggleSelection()
+        //     console.log('o p1')
+        // }
 
     })
     oButton.addEventListener('click', () => {
@@ -102,20 +95,15 @@ function changeMark() {
         document.querySelector('#x').style.fill = 'var(--silver)'
         xButton.classList.remove('mark-style')
         currentPlayer = 'circle'
-        if (vsComputer == true) {
-            p1 = 'o'
-            p2 = 'x'
-            player1.innerHTML = 'X (CPU)'
-            player2.innerHTML = 'O (YOU)'
-            xWins.innerText = '0'
-        }
-        else if (vsComputer === false) {
-            p1 = 'o'
-            p2 = 'x'
-            player1.innerHTML = 'O (P1)'
-            player2.innerHTML = 'X (P2)'
-            xWins.innerHTML = '0'
-        }
+        // if (vsComputer) {
+        //     toggleSelectionVsCPU()
+        //     console.log('o cpu')
+    
+        // }
+        // else {
+        //     toggleSelection()
+        //     console.log('o p1')
+        // }
     })
 
 }
@@ -162,7 +150,6 @@ function addTick(e) {
         crossmark.style.display = 'block'
         circlemark.style.display = 'none'
     }
-
     // Remove event Listener on squares
     cell.removeEventListener('click', addTick)
     // checkDraw()
@@ -179,7 +166,6 @@ function turn(currentPlayer) {
     }
 }
 
-
 // Hover States function
 function setHoverState(mark) {
     square.classList.remove('circle');
@@ -191,7 +177,6 @@ function setHoverState(mark) {
     else {
         square.classList.add('cross')
     }
-
 }
 // restart function
 function resetBoard() {
@@ -244,7 +229,7 @@ function crossWins() {
             cells[index].firstChild?.classList.contains('cross'))
         if (crossWins) {
             if (p1 === 'x') {
-                container.classList.add('show')
+                // container.classList.add('show')
                 // const markImg = document.createElement('img')
                 markImg.src = './assets/icon-x.svg'
                 roundMark.appendChild(markImg)
@@ -254,7 +239,7 @@ function crossWins() {
                 if (player1.innerHTML.includes('YOU')) {
                     notice.innerText = 'YOU WIN'
                 }
-                else{
+                else {
                     notice.innerText = 'PLAYER 1 WINS'
                 }
                 xWinCount++
@@ -262,17 +247,17 @@ function crossWins() {
                 return
             }
             if (p2 === 'x') {
-                container.classList.add('show')
+                // container.classList.add('show')
                 // const markImg = document.createElement('img')
                 markImg.src = './assets/icon-x.svg'
                 roundMark.appendChild(markImg)
-                
+
                 winningText.style.color = 'var(--light-blue)'
                 if (player2.innerHTML.includes('CPU')) {
                     notice.innerText = "OH NO, YOU LOST..."
 
                 }
-                else{
+                else {
                     notice.innerText = 'PLAYER 2 WINS'
                 }
                 xWinCount++
@@ -287,17 +272,20 @@ function crossWins() {
 
 function circleWins() {
     getPlayer()
+
     winCombo.forEach(combo => {
         const circleWins = combo.every(index =>
             cells[index].firstChild?.classList.contains('circle'))
         if (circleWins) {
             combo.forEach(index => {
                 cells[index].classList.add('winning-cell');
-                console.log(cells[index].firstChild.classList)
+                cells[index].firstChild.classList.add('change-mark');
+                cells[index].first
+                // oMark.style.fill = 'blue'
             });
 
             if (p1 === 'o') {
-                container.classList.add('show')
+                // container.classList.add('show')
                 // markImg = document.createElement('img')
                 markImg.src = './assets/icon-o.svg'
                 roundMark.appendChild(markImg)
@@ -307,7 +295,7 @@ function circleWins() {
                 if (player1.innerHTML.includes('CPU')) {
                     notice.innerText = "YOU WIN"
                 }
-                else{
+                else {
                     notice.innerText = `PLAYER 2 WINS`
                     console.log('hey')
                 }
@@ -316,7 +304,7 @@ function circleWins() {
                 return
             }
             if (p2 === 'o') {
-                container.classList.add('show')
+                // container.classList.add('show')
                 // markImg = document.createElement('img')
                 markImg.src = './assets/icon-o.svg'
                 roundMark.appendChild(markImg)
@@ -327,7 +315,7 @@ function circleWins() {
                     notice.innerText = "YOU WIN"
 
                 }
-                else{
+                else {
                     notice.innerText = `PLAYER 1 WINS`
 
                 }
@@ -355,56 +343,39 @@ const checkWin = () => {
 
 // choose mark function
 function toggleSelection() {
-
-
-    // p1 = 'o'
-    // p2 = 'x'
-    // player1.innerHTML = 'X (P2)'
-    // player2.innerHTML = 'O (P1)'
-    // oWins.innerHTML = '0'
-
-
-    // x.addEventListener('click', () => {
-
-    //     p1 = 'x'
-    //     p2 = 'o'
-    //     player1.innerHTML = 'X (P1)'
-    //     player2.innerHTML = 'O (P2)'
-    //     xWins.innerHTML = '0'
-    // })
-
+    if (currentPlayer === 'cross') {
+        p1 = 'x'
+        p2 = 'o'
+        player1.innerHTML = 'X (P1)'
+        player2.innerHTML = 'O (P2)'
+        oWins.innerHTML = '0'
+    } else {
+        p1 = 'o'
+        p2 = 'x'
+        player1.innerHTML = 'X (P2)'
+        player2.innerHTML = 'O (P1)'
+        xWins.innerHTML = '0'
+    }
 
 }
 
 
 function toggleSelectionVsCPU() {
-
-    // const o = document.getElementById('o-mark-style')
-    // const x = document.getElementById('x-mark-style')
-
-    // player1.innerHTML = 'X (CPU)'
-    // player2.innerHTML = 'O (YOU)'
-
-    // o.addEventListener('click', () => {
-
-    //     p1 = 'o'
-    //     p2 = 'x'
-    //     player1.innerHTML = 'X (CPU)'
-    //     player2.innerHTML = 'O (YOU)'
-    //     xWins.innerText = '0'
-
-    // })
-
-    // x.addEventListener('click', () => {
-
-    //     p1 = 'x'
-    //     p2 = 'o'
-    //     player1.innerHTML = 'X (YOU)'
-    //     player2.innerHTML = 'O (CPU)'
-    //     oWins.innerText = '0'
-    // })
-
+    if (currentPlayer === 'cross') {
+        p1 = 'x'
+        p2 = 'o'
+        player1.innerHTML = 'X (YOU)';
+        player2.innerHTML = 'O (CPU)';
+        oWins.innerHTML = '0'
+    } else {
+        p1 = 'o'
+        p2 = 'x'
+        player1.innerHTML = 'X (CPU)';
+        player2.innerHTML = 'X (YOU)';
+        oWins.innerHTML = '0'
+    }
 }
+
 // Check if its draw else check win 
 function endGame(draw) {
     if (draw) {
@@ -560,6 +531,12 @@ function startGameWithCPU() {
             turn(currentPlayer)
             break;
     }
+    if (vsComputer) {
+        toggleSelectionVsCPU()
+    }
+    else {
+        toggleSelection()
+    }
 }
 
 
@@ -568,6 +545,13 @@ function startGameWithCPU() {
 function startGame() {
     currentPlayer = 'cross'
     getBoard()
+    if (vsComputer) {
+        toggleSelectionVsCPU()
+    
+    }
+    else {
+        toggleSelection()
+    }
 }
 
 function main() {
@@ -579,8 +563,6 @@ function main() {
     quitRound()
     cancelRestart()
     restartBoard()
-    toggleSelectionVsCPU()
-    toggleSelection()
 }
 
 
