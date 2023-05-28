@@ -201,11 +201,14 @@ function cancelRestart() {
 }
 
 function getPlayer() {
-    return toggleSelection()
+    if (vsComputer) {
+        return toggleSelectionVsCPU()
+    } else {
+
+        return toggleSelection()
+    }
 }
-function getComputerPlayer() {
-    return toggleSelectionVsCPU()
-}
+
 
 function crossWins() {
     getPlayer()
@@ -256,8 +259,7 @@ function crossWins() {
 }
 
 function circleWins() {
-    getPlayer()
-
+   getPlayer()
     winCombo.forEach(combo => {
         const circleWins = combo.every(index =>
             cells[index].firstChild?.classList.contains('circle'))
@@ -338,14 +340,14 @@ function toggleSelection() {
         player1.innerHTML = 'X (P1)'
         player2.innerHTML = 'O (P2)'
         oWins.innerHTML = '0'
-    } else {
+    }
+    if (playerOne == 'circle') {
         p1 = 'o'
         p2 = 'x'
         player1.innerHTML = 'X (P2)'
         player2.innerHTML = 'O (P1)'
         xWins.innerHTML = '0'
     }
-
 }
 
 
@@ -356,11 +358,12 @@ function toggleSelectionVsCPU() {
         player1.innerHTML = 'X (YOU)';
         player2.innerHTML = 'O (CPU)';
         oWins.innerHTML = '0'
-    } else {
+    }
+    if (playerOne == 'circle') {
         p1 = 'o'
         p2 = 'x'
         player1.innerHTML = 'X (CPU)';
-        player2.innerHTML = 'X (YOU)';
+        player2.innerHTML = 'O (YOU)';
         oWins.innerHTML = '0'
     }
 }
@@ -456,7 +459,6 @@ function resetScore() {
 
 
 function aiMove() {
-
     setHoverState(currentPlayer)
     const emptyCells = [...cells].filter(cell => !cell.firstChild)
     const index = Math.floor(Math.random() * emptyCells.length)
@@ -494,16 +496,19 @@ function aiMove() {
 
     // Remove event Listener on squares
     cell.removeEventListener('click', addTick)
-    if (checkWin()) {
-        endGame(false)
-    }
-    else if (isDraw()) {
-        endGame(true)
-    }
+    
+    // if (checkWin()) {
+    //     endGame(false)
+    // }
+    // else if (isDraw()) {
+    //     endGame(true)
+    // }
 }
 
 // start game Vs Computer 
 function startGameWithCPU() {
+    toggleSelectionVsCPU()
+    vsComputer = true
     switch (currentPlayer) {
         case 'cross':
             setHoverState()
@@ -526,27 +531,17 @@ function startGameWithCPU() {
             turn(currentPlayer)
             break;
     }
-    if (vsComputer) {
-        toggleSelectionVsCPU()
-    }
-    else {
-        toggleSelection()
-    }
+
 }
 
 
 
 
 function startGame() {
+    vsComputer = false
     currentPlayer = 'cross'
     getBoard()
-    if (vsComputer) {
-        toggleSelectionVsCPU()
-
-    }
-    else {
-        toggleSelection()
-    }
+    toggleSelection()
 }
 
 function main() {
