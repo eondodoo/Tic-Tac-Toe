@@ -174,8 +174,19 @@ body {
     transform: scale(0.303);
     fill: var(--silver);
   }
-  .info img .crossmark{
-    fill: silver;
+  .info img{
+    height: 20px;
+    width: 20px;
+  }
+  .turn{
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto;
+    padding: 10px;
+  }
+  .circlemark{
+    display: none;
   }
 
   #square-buttons {
@@ -329,12 +340,19 @@ body {
     color: var(--dark-navy);
     font-weight: 700;
   }
-  .winning-cell{
+  /* .winning-cell{
     background-color: var(--light-yellow);
-  }
-  .change-mark{
-   background-color: var(--dark-navy) !important;
-  }
+    background: url('../assets/icon-o-outline.svg');
+    stroke: var(--semi-dark-navy);
+    object-fit: fill;
+    background-repeat: no-repeat;
+    background-position: 37px;
+    color: #000;
+  } */
+  /* .change-mark{
+    background: url('../assets/icon-o-outline.svg');
+    fill: var(--semi-dark-navy);
+  } */
   .quit {
     background-color: var(--silver);
     border-left: 20px;
@@ -590,6 +608,7 @@ body {
     align-items: center;
   }
   .info img{
+    fill: var(--silver);
     width: 20px;
     height: 20px;
   }
@@ -598,6 +617,8 @@ body {
     justify-content: center;
     gap: 12px;
     margin: 0 auto;
+    padding: 10px;
+
   }
   .circlemark{
     display: none;
@@ -1008,13 +1029,21 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .info img{
+    width: 16px;
+    height: 16px;
+  }
+  .turn{
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 12px;
+    margin: 0 auto;
+    padding: 10px;
   }
-  .info img{
-    width: 20px;
-    height: 20px;
+  .circlemark{
+    display: none;
   }
   .winning-cell{
     background-color: var(--light-yellow);
