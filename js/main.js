@@ -116,7 +116,16 @@ function addTick(e) {
             e.target.appendChild(oMark)
             break;
     }
-    whoWon()
+    if (checkWin()) {
+        endGame(false)
+    }
+    else if (isDraw()) {
+        endGame(true)
+    }
+    else {
+        currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
+        turn(currentPlayer)
+    }
 
     if (currentPlayer == 'circle') {
         circlemark.style.display = 'block'
@@ -142,32 +151,6 @@ function turn(currentPlayer) {
     }
 }
 
-function whoWon() {
-    if (vsComputer) {
-        if (checkWin()) {
-            endGame(false)
-        }
-        else if (isDraw()) {
-            endGame(true)
-        }
-        else{
-            currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
-            turn(currentPlayer)
-        }
-    }
-    else {
-        if (checkWin()) {
-            endGame(false)
-        }
-        else if (isDraw()){
-            endGame(true)
-        }
-        else {
-            currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
-            turn(currentPlayer)
-        }
-    }
-}
 // Hover States function
 function setHoverState(mark) {
     square.classList.remove('circle');
@@ -370,9 +353,9 @@ function endGame(draw) {
         tieCount++
         tiesScore.innerHTML = tieCount
     }
-    // else {
-    //     checkWin()
-    // }
+    else {
+        checkWin()
+    }
     cells.forEach(cell => cell.removeEventListener('click', addTick))
 }
 
@@ -484,11 +467,8 @@ function aiMove() {
         crossmark.style.display = 'block'
         circlemark.style.display = 'none'
     }
-    
     cell.removeEventListener('click', addTick)
-
-
-    
+    gameover = true
 }
 
 // start game Vs Computer 
@@ -499,13 +479,13 @@ function startGameWithCPU() {
         case 'cross':
             setHoverState()
             currentPlayer = 'cross'
-            // turn(currentPlayer)
+            
             getBoard();
             cells.forEach(cell => {
                 cell.addEventListener('click', addTick);
             });
 
-            // turn(currentPlayer)
+
             break;
         case 'circle':
             currentPlayer = 'cross'
