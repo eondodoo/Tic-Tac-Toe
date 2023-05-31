@@ -71,7 +71,6 @@ function getVersus() {
 }
 // function to change mark from X to O
 function changeMark() {
-    // currentPlayer = 'circle'
     const xButton = document.getElementById('x-mark-style')
     const oButton = document.getElementById('o-mark-style')
     xButton.addEventListener('click', () => {
@@ -146,7 +145,7 @@ function turn(currentPlayer) {
         setTimeout(aiMove, 500);
     }
     else if (vsComputer && currentPlayer === 'circle') {
-        getBoard()
+        // getBoard()
         setTimeout(aiMove, 500);
     }
 }
@@ -353,9 +352,9 @@ function endGame(draw) {
         tieCount++
         tiesScore.innerHTML = tieCount
     }
-    else {
-        checkWin()
-    }
+    // else {
+    //     checkWin()
+    // }
     cells.forEach(cell => cell.removeEventListener('click', addTick))
 }
 
@@ -458,7 +457,7 @@ function aiMove() {
             cell.appendChild(oMark)
             break;
     }
-    currentPlayer = currentPlayer === 'cross' ? 'circle' : 'cross'
+    currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle'
     if (currentPlayer == 'circle') {
         circlemark.style.display = 'block'
         crossmark.style.display = 'none'
@@ -467,6 +466,7 @@ function aiMove() {
         crossmark.style.display = 'block'
         circlemark.style.display = 'none'
     }
+
     cell.removeEventListener('click', addTick)
     gameover = true
 }
@@ -479,21 +479,19 @@ function startGameWithCPU() {
         case 'cross':
             setHoverState()
             currentPlayer = 'cross'
-            
             getBoard();
-            cells.forEach(cell => {
-                cell.addEventListener('click', addTick);
-            });
-
-
+            // cells.forEach(cell => {
+            //     cell.addEventListener('click', addTick);
+            // });
+            
             break;
         case 'circle':
             currentPlayer = 'cross'
             setHoverState()
             getBoard();
-            cells.forEach(cell => {
-                cell.addEventListener('click', addTick);
-            });
+            // cells.forEach(cell => {
+            //     cell.addEventListener('click', addTick);
+            // });
             turn(currentPlayer)
             break;
     }
@@ -506,7 +504,6 @@ function startGameWithCPU() {
 function startGame() {
     vsComputer = false
     toggleSelection()
-    currentPlayer = 'cross'
     getBoard()
 
 }
