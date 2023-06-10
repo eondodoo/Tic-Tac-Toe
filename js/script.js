@@ -25,14 +25,21 @@ let xWinCount = 0
 let oWinCount = 0
 let tieCount = 0
 let roundCount = 1
-let currentPlayer = 'cross'
-let playerOne = 'circle'
-let playerTwo = 'cross'
+
+
+
 let p1 = 'o'
 let p2 = 'o'
-let hum = 'O'
-let com = 'X'
 
+
+const player = new Object
+let opponent
+currentPlayer = player.playerOne
+player.playerOne = 'circle'
+player.playerTwo = 'cross'
+player.computer = 'cross'
+
+// let currentPlayer = player.playerTwo
 
 let winCombo = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -45,7 +52,7 @@ let gameover = false
 
 
 // Function to get Game board
-function getBoard(_cell) {
+function getBoard() {
     for (let i = 0; i < cells.length; i++) {
         let btn = cells[i]
         btn.id = i;
@@ -59,15 +66,17 @@ function getVersus() {
         document.getElementById('new-game-menu').style.display = 'none';
         document.getElementById('board').style.display = 'block';
         vsComputer = true
+        opponent = 'computer'
         changeMark()
-        startGameWithCPU()
+        startGameWithCPU(player, opponent)
     })
     vsPlayer.addEventListener('click', () => {
         document.getElementById('new-game-menu').style.display = 'none';
         document.getElementById('board').style.display = 'block'
         vsComputer = false
+        opponent = 'playerTwo'
         changeMark()
-        startGame()
+        startGame(player, opponent)
     })
 }
 // function to change mark from X to O
@@ -79,27 +88,30 @@ function changeMark() {
         document.querySelector('svg').style.fill = 'var(--dark-navy)'
         document.querySelector('#o').style.fill = 'var(--silver)'
         oButton.classList.remove('mark-style')
-        currentPlayer = 'cross'
-        playerOne = 'cross'
-        playerTwo = 'circle'
+        player.playerOne = 'cross'
+        player.playerTwo = 'circle'
+        player.computer = 'circle'
+        currentPlayer = player.playerOne
+
     })
     oButton.addEventListener('click', () => {
         oButton.classList.add('mark-style')
         document.querySelector('#o').style.fill = 'var(--dark-navy)'
         document.querySelector('#x').style.fill = 'var(--silver)'
         xButton.classList.remove('mark-style')
-        currentPlayer = 'circle'
-        playerOne = 'circle'
-        playerTwo = 'cross'
+        currentPlayer = player.playerTwo
+        player.playerOne = 'circle'
+        player.playerTwo = 'cross'
+        player.computer = 'cross'
     })
 
 }
+
 function addTick(e) {
-    setHoverState(currentPlayer)
     const cell = e.target
+
     switch (currentPlayer) {
         case 'cross':
-            // if current player is X, append X immage as child 
             cell.classList.add('x-active')
             const xMark = document.createElement('img')
             xMark.classList.add(currentPlayer)
@@ -107,28 +119,29 @@ function addTick(e) {
             xMark.src = './assets/icon-x.svg';
             e.target.appendChild(xMark)
             break;
-
         case 'circle':
-            // if current player is O, append O immage as child 
             cell.classList.add('o-active')
             const oMark = document.createElement('img')
             oMark.classList.add(currentPlayer)
             oMark.id = ('mark')
             oMark.src = './assets/icon-o.svg';
             e.target.appendChild(oMark)
-            break;
+            break
     }
+
     if (checkWin(currentPlayer)) {
         endGame(false)
+        showWinMessage(currentPlayer)
+        gameover = true
     }
     else if (isDraw()) {
         endGame(true)
+        gameover = true
     }
     else {
-        currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
+        currentPlayer = currentPlayer === player.playerTwo ? player.playerOne : player.playerTwo
         turn(currentPlayer)
     }
-
     if (currentPlayer == 'circle') {
         circlemark.style.display = 'block'
         crossmark.style.display = 'none'
@@ -137,12 +150,11 @@ function addTick(e) {
         crossmark.style.display = 'block'
         circlemark.style.display = 'none'
     }
-    // Remove event Listener on squares
     cell.removeEventListener('click', addTick)
-    // checkDraw()
+
 }
 
-//  who goes next
+// //  who goes next
 function turn(currentPlayer) {
     if (vsComputer && currentPlayer === 'cross') {
         setTimeout(aiMove, 500);
@@ -153,7 +165,7 @@ function turn(currentPlayer) {
     }
 }
 
-// Hover States function
+// // Hover States function
 function setHoverState(mark) {
     square.classList.remove('circle');
     square.classList.remove('cross');
@@ -165,7 +177,7 @@ function setHoverState(mark) {
         square.classList.add('cross')
     }
 }
-// restart function
+// // restart function
 function resetBoard() {
     const restartBoard = document.getElementById('restart-board')
     restartBoard.addEventListener('click', () => {
@@ -195,6 +207,7 @@ function restartBoard() {
 
     })
 }
+
 function cancelRestart() {
     const cancelButton = document.getElementById('cancel')
     cancelButton.addEventListener('click', () => {
@@ -202,202 +215,71 @@ function cancelRestart() {
     })
 }
 
-function getPlayer() {
-    if (vsComputer) {
-        return toggleSelectionVsCPU()
-    } else {
-
-        return toggleSelection()
-    }
-}
-
-
-// function crossWins() {
-//     getPlayer()
-//     winCombo.forEach(combo => {
-//         const crossWins = combo.every(index =>
-//             cells[index].firstChild?.classList.contains('cross'))
-//         if (crossWins) {
-//             if (p1 === 'x') {
-//                 container.classList.add('show')
-//                 // const markImg = document.createElement('img')
-//                 markImg.src = './assets/icon-x.svg'
-//                 roundMark.appendChild(markImg)
-//                 winningText.style.color = 'var(--light-blue)'
-
-//                 if (player1.innerHTML.includes('YOU')) {
-//                     notice.innerText = 'YOU WIN'
-//                 }
-//                 else {
-//                     notice.innerText = 'PLAYER 1 WINS'
-//                 }
-//                 xWinCount++
-//                 xWins.innerHTML = xWinCount
-//                 gameover = true
-//                 return
-//             }
-//             else if (p2 === 'x') {
-//                 container.classList.add('show')
-//                 // const markImg = document.createElement('img')
-//                 markImg.src = './assets/icon-x.svg'
-//                 roundMark.appendChild(markImg)
-//                 winningText.style.color = 'var(--light-blue)'
-
-//                 if (player2.innerHTML.includes('CPU')) {
-//                     notice.innerText = "OH NO, YOU LOST..."
-//                 }
-//                 else {
-//                     notice.innerText = 'PLAYER 2 WINS'
-//                 }
-//                 xWinCount++
-//                 xWins.innerHTML = xWinCount
-//                 gameover = true
-//                 return
-//             }
-
-//         }
-//     })
-
-// }
-
-// function circleWins() {
-//     getPlayer()
-//     winCombo.forEach(combo => {
-//         const circleWins = combo.every(index =>
-//             cells[index].firstChild?.classList.contains('circle'))
-//         if (circleWins) {
-//             if (p1 === 'o') {
-//                 container.classList.add('show')
-//                 markImg.src = './assets/icon-o.svg'
-//                 roundMark.appendChild(markImg)
-//                 winningText.style.color = 'var(--light-yellow)'
-//                 if (player2.innerHTML.includes('YOU')) {
-//                     notice.innerText = "YOU WIN"
-//                 }
-//                 else {
-//                     notice.innerText = `PLAYER 1 WINS`
-//                 }
-//                 oWinCount++
-//                 oWins.innerHTML = oWinCount
-//                 gameover = true
-//                 return
-//             }
-//             else if (p2 === 'o') {
-//                 container.classList.add('show')
-//                 markImg.src = './assets/icon-o.svg'
-//                 roundMark.appendChild(markImg)
-//                 winningText.style.color = 'var(--light-yellow)'
-
-//                 if (player2.innerHTML.includes('CPU')) {
-//                     notice.innerText = "OH NO, YOU LOST"
-//                 }
-//                 else {
-//                     notice.innerText = `PLAYER 2 WINS`
-//                 }
-//                 oWinCount++
-//                 oWins.innerHTML = oWinCount
-//                 gameover = true
-//                 return
-//             }
-//         }
-//     })
-// }
 
 // check draw
-// function isDraw() {
-//     return [...cells].every(cell => {
-//         return cell.classList.contains('x-active') || cell.classList.contains('o-active')
-//     })
-// }
 function isDraw() {
     return [...cells].every(cell => {
         return cell.classList.contains('x-active') || cell.classList.contains('o-active')
     })
 }
-// function isDraw() {
-//     const emptyCells = [...cells].filter(cell => !cell.firstChild);
-//     return emptyCells.length === 0;
-// }
-// function isDraw() {
-//     // Check if all of the cells are filled
-//     for (const cell of cells) {
-//         if (!cell.firstChild) {
-//             return false;
-//         }
-//     }
-
-//     // All of the cells are filled, so it is a draw
-//     return true;
-// }
 
 
-
-// check winning combination
-// const checkWin = (currentPlayer) => {
-//     if (currentPlayer == 'cross') {
-//         crossWins()
-//     }
-//     else if (currentPlayer == 'circle') {
-//         circleWins()
-//     }
-// }
 function checkWin(player) {
-    getPlayer();
-    winCombo.forEach(combo => {
-        let won = true
-        const circleWins = combo.every(index =>
-            cells[index].firstChild?.classList.contains(player) && won
-        );
-        const crossWins = combo.every(index =>
-            cells[index].firstChild?.classList.contains(player) && won
-        );
-        if (circleWins || crossWins) {
-            container.classList.add('show');
-            markImg.src = circleWins ? './assets/icon-o.svg' : './assets/icon-x.svg';
-            roundMark.appendChild(markImg);
-            winningText.style.color = circleWins ? 'var(--light-yellow)' : 'var(--light-blue)';
-
-            if (circleWins && won && p1 === 'o' || crossWins && won && p1 === 'x') {
-                notice.innerText = player1.innerHTML.includes('YOU') ? 'YOU WIN' : 'PLAYER 1 WINS';
-                if (circleWins) {
-                    oWinCount++;
-                    oWins.innerHTML = oWinCount;
-                } else {
-                    xWinCount++;
-                    xWins.innerHTML = xWinCount;
-                }
-                return true
-            } else if (circleWins && p2 === 'o' || crossWins && p2 === 'x') {
-                notice.innerText = player2.innerHTML.includes('CPU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
-                if (circleWins) {
-                    oWinCount++;
-                    oWins.innerHTML = oWinCount;
-                } else {
-                    xWinCount++;
-                    xWins.innerHTML = xWinCount;
-                }
-                return true
-            }
-
-            gameover = true;
-            return true;
+    for (const combo of winCombo) {
+        let won = true;
+        for (const index of combo) {
+            won = cells[index].firstChild?.classList.contains(player) && won;
         }
-    });
+        if (won) {
+            return true; // Return true if a win is found
+        }
+    }
+    return false; // Return false if no win is found
+}
+
+function showWinMessage(player) {
+    container.classList.add('show');
+    markImg.src = player === 'circle' ? './assets/icon-o.svg' : './assets/icon-x.svg';
+    roundMark.appendChild(markImg);
+    winningText.style.color = player === 'circle' ? 'var(--light-yellow)' : 'var(--light-blue)';
+
+    if (player == 'circle' && p1 === 'o' || player === 'cross' && p1 === 'x') {
+        notice.innerText = player1.innerHTML.includes('YOU') ? 'YOU WIN' : 'PLAYER 1 WINS';
+        if (player == 'circle') {
+            oWinCount++;
+            oWins.innerHTML = oWinCount;
+        } else {
+            xWinCount++;
+            xWins.innerHTML = xWinCount;
+        }
+        return true
+    } else if (player == 'circle' && p2 === 'o' || player == 'cross' && p2 === 'x') {
+        notice.innerText = player2.innerHTML.includes('CPU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
+        if (player === 'circle') {
+            oWinCount++;
+            oWins.innerHTML = oWinCount;
+        } else {
+            xWinCount++;
+            xWins.innerHTML = xWinCount;
+        }
+        return true
+    }
+
+    gameover = true;
+    return true;
 }
 
 
-
-// choose mark function
+// // choose mark function
 function toggleSelection() {
-    if (playerOne === 'cross') {
-        playerTwo = 'circle'
+    if (player.playerOne === 'cross') {
+
         p1 = 'x'
         p2 = 'o'
         player1.innerHTML = 'X (P1)'
         player2.innerHTML = 'O (P2)'
     }
-    if (playerOne == 'circle') {
-        playerTwo = 'cross'
+    if (player.playerOne == 'circle') {
         p1 = 'o'
         p2 = 'x'
         player1.innerHTML = 'X (P2)'
@@ -407,15 +289,15 @@ function toggleSelection() {
 
 
 function toggleSelectionVsCPU() {
-    if (playerOne === 'cross') {
-        playerTwo = 'circle'
+    if (player.playerOne === 'cross') {
+
         p1 = 'x'
         p2 = 'o'
         player1.innerHTML = 'X (YOU)';
         player2.innerHTML = 'O (CPU)';
     }
-    if (playerOne == 'circle') {
-        playerTwo = 'cross'
+    if (player.playerOne == 'circle') {
+
         p1 = 'o'
         p2 = 'x'
         player1.innerHTML = 'X (CPU)';
@@ -423,7 +305,7 @@ function toggleSelectionVsCPU() {
     }
 }
 
-// Check if its draw else check win 
+// // Check if its draw else check win 
 function endGame(draw) {
     if (draw) {
         container.classList.add('show')
@@ -435,12 +317,12 @@ function endGame(draw) {
         gameover = true
     }
     // else {
-    //     checkWin()
+    //     // showWinMessage(player)
     // }
     cells.forEach(cell => cell.removeEventListener('click', addTick))
 }
 
-// Next Round
+// // Next Round
 function nextRound() {
     gameover = false
     newRound.addEventListener('click', () => {
@@ -471,7 +353,7 @@ function updateRound() {
     roundCount++
 }
 
-// Quit game
+// // Quit game
 function quitRound() {
     quit.addEventListener('click', () => {
         xWins.innerHTML = 0
@@ -496,13 +378,13 @@ function quitRound() {
         })
     })
     if (vsComputer) {
-        startGameWithCPU()
+        // startGameWithCPU()
     }
     else {
         startGame()
     }
 }
-// Reset score to zero
+// // Reset score to zero
 function resetScore() {
     xWinCount = 0
     oWinCount = 0
@@ -515,19 +397,12 @@ function resetScore() {
 
 
 function aiMove() {
-
     setHoverState(currentPlayer)
     const emptyCells = [...cells].filter(cell => !cell.firstChild)
     // const index = Math.floor(Math.random() * emptyCells.length)
     const bestMove = getBestMove(currentPlayer, emptyCells)
     const cell = emptyCells[bestMove.index]
-    console.log(bestMove)
-    console.log(emptyCells.length - 1)
-
-
-    // const bestMove = getBestMove(currentPlayer, emptyCells)
-    // const cell = emptyCells(bestMove.index)
-
+  
     switch (currentPlayer) {
         case 'cross':
             // if current player is X, append X immage as child 
@@ -548,14 +423,17 @@ function aiMove() {
             cell.appendChild(oMark)
             break;
     }
-    if (checkWin()) {
+    if (checkWin(currentPlayer)) {
         endGame(false)
+        showWinMessage(currentPlayer)
+        gameover = true
     }
     else if (isDraw()) {
         endGame(true)
+        gameover = false
     }
     else {
-        currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
+        currentPlayer = currentPlayer === player.computer ? player.playerOne : player.computer
         // turn(currentPlayer)
     }
     // currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle'
@@ -578,7 +456,7 @@ function getBestMove(player, emptyCells) {
 
     for (let i = 0; i < emptyCells.length; i++) {
         const cell = emptyCells[i];
-        // const index = parseInt(cell.id);
+        const index = i
 
         if (!cell.firstChild) {
             // Simulate the move
@@ -600,7 +478,7 @@ function getBestMove(player, emptyCells) {
                 (player === 'circle' && score < bestScore)
             ) {
                 bestScore = score;
-                bestIndex = i;
+                bestIndex = index;
             }
 
         }
@@ -609,59 +487,50 @@ function getBestMove(player, emptyCells) {
     return { index: bestIndex, score: bestScore };
 }
 
+
 function minimax(player, isMaximizing) {
-    let emptyCells = [...cells].filter((cell) => !cell.firstChild);
-    if (checkWin(player)) {
-        if (checkWin(playerOne)) {
-            console.log('easy')
-            return 1
-        }
-
-        if (checkWin(currentPlayer)) {
-            return -1
-        }
+    if (checkWin('cross')) {
+        return 1
     }
-
+    else if (checkWin('circle')) {
+        return -1
+    }
     if (isDraw()) {
-        console.log('0000')
         return 0
     }
 
-
     let bestScore = isMaximizing ? -Infinity : Infinity;
-    // let emptyCells = [...cells].filter((cell) => !cell.firstChild);
+    let emptyCells = [...cells].filter((cell) => !cell.firstChild);
 
     for (let i = 0; i < emptyCells.length; i++) {
         const cell = emptyCells[i];
+        cell.classList.add(`${player}-active`);
+        const mark = document.createElement('img');
+        mark.classList.add(player);
+        mark.id = 'mark';
+        mark.src = player === 'cross' ? './assets/icon-x.svg' : './assets/icon-o.svg';
+        cell.appendChild(mark);
+        const score = minimax(player === 'cross' ? 'circle' : 'cross', !isMaximizing);
 
-        if (!cell.firstChild) {
-            cell.classList.add(`${player}-active`);
-            const mark = document.createElement('img');
-            mark.classList.add(player);
-            mark.id = 'mark';
-            mark.src = player === 'cross' ? './assets/icon-x.svg' : './assets/icon-o.svg';
-            cell.appendChild(mark);
+        cell.classList.remove(`${player}-active`);
+        cell.removeChild(mark);
 
-            const score = minimax(player === 'cross' ? 'circle' : 'cross', !isMaximizing);
-
-            cell.classList.remove(`${player}-active`);
-            cell.removeChild(mark);
-
-            if (isMaximizing) {
-                bestScore = Math.max(score, bestScore);
-            }
-            else {
-                bestScore = Math.min(score, bestScore);
-            }
+        if (isMaximizing) {
+            bestScore = Math.max(score, bestScore);
+        }
+        else {
+            bestScore = Math.min(score, bestScore);
         }
     }
 
-    return bestScore;
+
+    return bestScore
 }
 
 // start game Vs Computer 
 function startGameWithCPU() {
-    if (gameover) return
+    currentPlayer = player.playerOne
+    // console.log(currentPlayer)
     vsComputer = true
     toggleSelectionVsCPU()
     switch (currentPlayer) {
@@ -669,18 +538,12 @@ function startGameWithCPU() {
             setHoverState()
             currentPlayer = 'cross'
             getBoard();
-            // cells.forEach(cell => {
-            //     cell.addEventListener('click', addTick);
-            // });
 
             break;
         case 'circle':
             currentPlayer = 'cross'
             setHoverState()
             getBoard();
-            // cells.forEach(cell => {
-            //     cell.addEventListener('click', addTick);
-            // });
             turn(currentPlayer)
             break;
     }
@@ -688,18 +551,13 @@ function startGameWithCPU() {
 }
 
 
-
-
-
-function startGame() {
+function startGame(player) {
     currentPlayer = 'cross'
     vsComputer = false
     toggleSelection()
     getBoard()
 
-
 }
-
 function main() {
     getVersus()
     changeMark()
@@ -711,17 +569,28 @@ function main() {
     restartBoard()
 }
 
+// function main() {
+//     getVersus()
+//     changeMark()
+//     setHoverState()
+//     nextRound()
+//     resetBoard()
+//     quitRound()
+//     cancelRestart()
+//     restartBoard()
+// }
+
 
 main()
 
-  // combo.forEach(index => {
-            //     cells[index].classList.add('winning-cell');
-            //     cells[index].firstChild.classList.add('change-mark');
-            //     // const svgElement = <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg"><path d="M32 0c17.673 0 32 14.327 32 32 0 17.673-14.327 32-32 32C14.327 64 0 49.673 0 32 0 14.327 14.327 0 32 0Zm0 18.963c-7.2 0-13.037 5.837-13.037 13.037 0 7.2 5.837 13.037 13.037 13.037 7.2 0 13.037-5.837 13.037-13.037 0-7.2-5.837-13.037-13.037-13.037Z" fill="#1f3641"/></svg>
-            //    const imgElelent = cells[index].firstChild
-            //    const src = imgElelent.getAttribute('src')
-            //    imgElelent.setAttribute('style', 'fill: blue')
-            //    console.log(src)
+//   // combo.forEach(index => {
+//             //     cells[index].classList.add('winning-cell');
+//             //     cells[index].firstChild.classList.add('change-mark');
+//             //     // const svgElement = <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg"><path d="M32 0c17.673 0 32 14.327 32 32 0 17.673-14.327 32-32 32C14.327 64 0 49.673 0 32 0 14.327 14.327 0 32 0Zm0 18.963c-7.2 0-13.037 5.837-13.037 13.037 0 7.2 5.837 13.037 13.037 13.037 7.2 0 13.037-5.837 13.037-13.037 0-7.2-5.837-13.037-13.037-13.037Z" fill="#1f3641"/></svg>
+//             //    const imgElelent = cells[index].firstChild
+//             //    const src = imgElelent.getAttribute('src')
+//             //    imgElelent.setAttribute('style', 'fill: blue')
+//             //    console.log(src)
 
-            //     // cells[index].appendChild(svgElement)
-            // });
+//             //     // cells[index].appendChild(svgElement)
+//             // });

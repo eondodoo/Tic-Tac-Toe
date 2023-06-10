@@ -212,36 +212,17 @@ body {
     cursor: pointer;
   }
 
-  .square-buttons.cross .squares:hover {
+  .square-buttons.cross .squares:not(:has(*)):hover {
     background: url(../assets/icon-x-outline.svg);
     background-repeat: no-repeat;
     background-position: 37px;
   }
 
-  .square-buttons.circle .squares:hover {
+  .square-buttons.circle .squares:not(:has(*)):hover {
     background: url(../assets/icon-o-outline.svg);
     background-repeat: no-repeat;
     background-position: 37px;
   }
-
-  /* .squares::before,
-.squares::after,
-.square-buttons.cross .squares:hover::before,
-.square-buttons.cross .squares:hover::after {
-  content: '';
-  transform: scale(0.5);
-  background: url(../assets/icon-x-outline.svg);
-  background-size: cover;
-  background-repeat: no-repeat;
-  cursor: pointer;
-} */
-  /* .circle:hover{
-    transform: scale(0.5);
-    background-color: yellow;
-    background: url(../assets/icon-o-outline.svg);
-    background-size: cover;
-    background-repeat: no-repeat;
-} */
 
   .footer-buttons {
     width: 459px;
@@ -647,36 +628,17 @@ body {
     cursor: pointer;
   }
 
-  .square-buttons.cross .squares:hover {
+  .square-buttons.cross .squares:not(:has(*)):hover {
     background: url(../assets/icon-x-outline.svg);
     background-repeat: no-repeat;
     background-position: 37px;
   }
 
-  .square-buttons.circle .squares:hover {
+  .square-buttons.circle .squares:not(:has(*)):hover {
     background: url(../assets/icon-o-outline.svg);
     background-repeat: no-repeat;
     background-position: 37px;
   }
-
-  /* .squares::before,
-  .squares::after,
-  .square-buttons.cross .squares:hover::before,
-  .square-buttons.cross .squares:hover::after {
-    content: '';
-    transform: scale(0.5);
-    background: url(../assets/icon-x-outline.svg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    cursor: pointer;
-  } */
-  /* .circle:hover{
-      transform: scale(0.5);
-      background-color: yellow;
-      background: url(../assets/icon-o-outline.svg);
-      background-size: cover;
-      background-repeat: no-repeat;
-  } */
 
   .footer-buttons {
     width: 459px;
@@ -1072,35 +1034,17 @@ body {
     cursor: pointer;
   }
 
-  .square-buttons.cross .squares:hover {
+  .square-buttons.cross .squares:not(:has(*)):hover {
     background: url(../assets/icon-x-outline.svg);
     background-repeat: no-repeat;
     background-position: 15px;
   }
 
-  .square-buttons.circle .squares:hover {
+  .square-buttons.circle .squares:not(:has(*)):hover {
     background: url(../assets/icon-o-outline.svg);
     background-repeat: no-repeat;
     background-position: 15px;
   }
-  /* .squares::before,
-  .squares::after,
-  .square-buttons.x-active .squares:hover::before,
-  .square-buttons.x-active .squares:hover::after {
-    transform: scale(0.5);
-    background-color: yellow;
-    background: url(../assets/icon-x-outline.svg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    cursor: pointer;
-  } */
-  /* .o-active:hover{
-      transform: scale(0.5);
-      background-color: yellow;
-      background: url(../assets/icon-o-outline.svg);
-      background-size: cover;
-      background-repeat: no-repeat;
-  } */
 
   .footer-buttons {
     width: 328px;
