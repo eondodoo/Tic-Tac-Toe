@@ -254,7 +254,7 @@ function showWinMessage(player) {
         }
         return true
     } else if (player == 'circle' && p2 === 'o' || player == 'cross' && p2 === 'x') {
-        notice.innerText = player2.innerHTML.includes('CPU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
+        notice.innerText = player2.innerHTML.includes('YOU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
         if (player === 'circle') {
             oWinCount++;
             oWins.innerHTML = oWinCount;
