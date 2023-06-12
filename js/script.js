@@ -34,7 +34,7 @@ let p2 = 'o'
 
 const player = new Object
 let opponent
-currentPlayer = player.computer
+currentPlayer = 'cross'
 player.playerOne = 'circle'
 player.playerTwo = 'cross'
 player.computer = 'cross'
@@ -91,7 +91,7 @@ function changeMark() {
         player.playerOne = 'cross'
         player.playerTwo = 'circle'
         player.computer = 'circle'
-        currentPlayer = player.playerOne
+        currentPlayer = 'cross'
 
     })
     oButton.addEventListener('click', () => {
@@ -99,18 +99,17 @@ function changeMark() {
         document.querySelector('#o').style.fill = 'var(--dark-navy)'
         document.querySelector('#x').style.fill = 'var(--silver)'
         xButton.classList.remove('mark-style')
-        currentPlayer = player.playerTwo
-        currentPlayer = player.computer
+        currentPlayer = 'cross'
         player.playerOne = 'circle'
         player.playerTwo = 'cross'
-        player.computer = 'cross'
+        player.computer = 'circle'
     })
 
 }
 
 function addTick(e) {
     const cell = e.target
-
+    setHoverState(currentPlayer)
     switch (currentPlayer) {
         case 'cross':
             cell.classList.add('x-active')
@@ -266,7 +265,6 @@ function showWinMessage(player) {
         return true
     }
 
-    gameover = true;
     return true;
 }
 
@@ -291,14 +289,12 @@ function toggleSelection() {
 
 function toggleSelectionVsCPU() {
     if (player.playerOne === 'cross') {
-
         p1 = 'x'
         p2 = 'o'
         player1.innerHTML = 'X (YOU)';
         player2.innerHTML = 'O (CPU)';
     }
     if (player.playerOne == 'circle') {
-
         p1 = 'o'
         p2 = 'x'
         player1.innerHTML = 'X (CPU)';
@@ -489,18 +485,20 @@ function getBestMove(player, emptyCells) {
 }
 
 function minimax(player, isMaximizing) {
+    let emptyCells = [...cells].filter((cell) => !cell.firstChild);
+
     if (checkWin('cross')) {
         return 1
     }
     else if (checkWin('circle')) {
         return -1
     }
-    if (isDraw()) {
+    if (emptyCells == 0) {
         return 0
     }
 
     let bestScore = isMaximizing ? -Infinity : Infinity;
-    let emptyCells = [...cells].filter((cell) => !cell.firstChild);
+    // let emptyCells = [...cells].filter((cell) => !cell.firstChild);
 
     for (let i = 0; i < emptyCells.length; i++) {
 
@@ -524,14 +522,12 @@ function minimax(player, isMaximizing) {
         }
     }
 
-
     return bestScore
 }
 
-// start game Vs Computer 
+
 function startGameWithCPU() {
-    // if (gameover) return
-    // currentPlayer = 'cross'
+    currentPlayer = player.playerOne
     vsComputer = true
     toggleSelectionVsCPU()
     switch (currentPlayer) {
@@ -539,15 +535,40 @@ function startGameWithCPU() {
             currentPlayer = 'cross'
             setHoverState()
             getBoard();
+
             break;
         case 'circle':
             currentPlayer = 'cross'
             setHoverState()
             getBoard();
+         
             turn(currentPlayer)
             break;
     }
+
 }
+
+// function startGameWithCPU() {
+//     if (gameover) return;
+  
+//     vsComputer = true;
+//     toggleSelectionVsCPU();
+  
+//     currentPlayer = 'cross';
+//     setHoverState(currentPlayer);
+//     getBoard();
+  
+//     if (currentPlayer === player.computer) {
+//       // Computer's turn
+//       setTimeout(aiMove, 500);
+//     } else {
+//       // Player's turn
+//       cells.forEach(cell => {
+//         cell.addEventListener('click', addTick);
+//       });
+//     }
+//   }
+  
 
 
 
