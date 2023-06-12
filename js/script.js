@@ -34,7 +34,7 @@ let p2 = 'o'
 
 const player = new Object
 let opponent
-currentPlayer = player.playerOne
+currentPlayer = player.computer
 player.playerOne = 'circle'
 player.playerTwo = 'cross'
 player.computer = 'cross'
@@ -100,6 +100,7 @@ function changeMark() {
         document.querySelector('#x').style.fill = 'var(--silver)'
         xButton.classList.remove('mark-style')
         currentPlayer = player.playerTwo
+        currentPlayer = player.computer
         player.playerOne = 'circle'
         player.playerTwo = 'cross'
         player.computer = 'cross'
@@ -132,11 +133,11 @@ function addTick(e) {
     if (checkWin(currentPlayer)) {
         endGame(false)
         showWinMessage(currentPlayer)
-        gameover = true
+        // gameover = true
     }
     else if (isDraw()) {
         endGame(true)
-        gameover = true
+        // gameover = true
     }
     else {
         currentPlayer = currentPlayer === player.playerTwo ? player.playerOne : player.playerTwo
@@ -324,7 +325,6 @@ function endGame(draw) {
 
 // // Next Round
 function nextRound() {
-    gameover = false
     newRound.addEventListener('click', () => {
         container.classList.remove('show')
         roundMark.replaceChildren()
@@ -397,12 +397,13 @@ function resetScore() {
 
 
 function aiMove() {
+    if (gameover) return
     setHoverState(currentPlayer)
     const emptyCells = [...cells].filter(cell => !cell.firstChild)
     // const index = Math.floor(Math.random() * emptyCells.length)
     const bestMove = getBestMove(currentPlayer, emptyCells)
     const cell = emptyCells[bestMove.index]
-  
+    console.log(bestMove)
     switch (currentPlayer) {
         case 'cross':
             // if current player is X, append X immage as child 
@@ -424,13 +425,13 @@ function aiMove() {
             break;
     }
     if (checkWin(currentPlayer)) {
-        endGame(false)
         showWinMessage(currentPlayer)
-        gameover = true
+        endGame(false)
+        // gameover = true
     }
     else if (isDraw()) {
         endGame(true)
-        gameover = false
+        // gameover = true
     }
     else {
         currentPlayer = currentPlayer === player.computer ? player.playerOne : player.computer
@@ -456,7 +457,7 @@ function getBestMove(player, emptyCells) {
 
     for (let i = 0; i < emptyCells.length; i++) {
         const cell = emptyCells[i];
-        const index = i
+        // const index = parseInt(i)
 
         if (!cell.firstChild) {
             // Simulate the move
@@ -478,7 +479,7 @@ function getBestMove(player, emptyCells) {
                 (player === 'circle' && score < bestScore)
             ) {
                 bestScore = score;
-                bestIndex = index;
+                bestIndex = i;
             }
 
         }
@@ -486,7 +487,6 @@ function getBestMove(player, emptyCells) {
 
     return { index: bestIndex, score: bestScore };
 }
-
 
 function minimax(player, isMaximizing) {
     if (checkWin('cross')) {
@@ -503,6 +503,7 @@ function minimax(player, isMaximizing) {
     let emptyCells = [...cells].filter((cell) => !cell.firstChild);
 
     for (let i = 0; i < emptyCells.length; i++) {
+
         const cell = emptyCells[i];
         cell.classList.add(`${player}-active`);
         const mark = document.createElement('img');
@@ -529,16 +530,15 @@ function minimax(player, isMaximizing) {
 
 // start game Vs Computer 
 function startGameWithCPU() {
-    currentPlayer = player.playerOne
-    // console.log(currentPlayer)
+    // if (gameover) return
+    // currentPlayer = 'cross'
     vsComputer = true
     toggleSelectionVsCPU()
     switch (currentPlayer) {
         case 'cross':
-            setHoverState()
             currentPlayer = 'cross'
+            setHoverState()
             getBoard();
-
             break;
         case 'circle':
             currentPlayer = 'cross'
@@ -547,8 +547,8 @@ function startGameWithCPU() {
             turn(currentPlayer)
             break;
     }
-
 }
+
 
 
 function startGame(player) {
@@ -569,28 +569,4 @@ function main() {
     restartBoard()
 }
 
-// function main() {
-//     getVersus()
-//     changeMark()
-//     setHoverState()
-//     nextRound()
-//     resetBoard()
-//     quitRound()
-//     cancelRestart()
-//     restartBoard()
-// }
-
-
 main()
-
-//   // combo.forEach(index => {
-//             //     cells[index].classList.add('winning-cell');
-//             //     cells[index].firstChild.classList.add('change-mark');
-//             //     // const svgElement = <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg"><path d="M32 0c17.673 0 32 14.327 32 32 0 17.673-14.327 32-32 32C14.327 64 0 49.673 0 32 0 14.327 14.327 0 32 0Zm0 18.963c-7.2 0-13.037 5.837-13.037 13.037 0 7.2 5.837 13.037 13.037 13.037 7.2 0 13.037-5.837 13.037-13.037 0-7.2-5.837-13.037-13.037-13.037Z" fill="#1f3641"/></svg>
-//             //    const imgElelent = cells[index].firstChild
-//             //    const src = imgElelent.getAttribute('src')
-//             //    imgElelent.setAttribute('style', 'fill: blue')
-//             //    console.log(src)
-
-//             //     // cells[index].appendChild(svgElement)
-//             // });
