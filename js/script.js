@@ -26,11 +26,8 @@ let oWinCount = 0
 let tieCount = 0
 let roundCount = 1
 
-
-
 let p1 = 'o'
 let p2 = 'o'
-
 
 const player = new Object
 let opponent
@@ -38,8 +35,6 @@ currentPlayer = 'cross'
 player.playerOne = 'circle'
 player.playerTwo = 'cross'
 player.computer = 'cross'
-
-// let currentPlayer = player.playerTwo
 
 let winCombo = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -254,7 +249,7 @@ function showWinMessage(player) {
         }
         return true
     } else if (player == 'circle' && p2 === 'o' || player == 'cross' && p2 === 'x') {
-        notice.innerText = player2.innerHTML.includes('YOU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
+        notice.innerText = player2.innerHTML.includes('CPU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
         if (player === 'circle') {
             oWinCount++;
             oWins.innerHTML = oWinCount;
@@ -391,13 +386,17 @@ function resetScore() {
     tiesScore.innerHTML = tieCount
 }
 
+function bestSpot() {
+    return minimax(player.computer).id
+}
+
 
 function aiMove() {
-    if (gameover) return
     setHoverState(currentPlayer)
-    const emptyCells = [...cells].filter(cell => !cell.firstChild)
+    const emptyCells = getEmptySpace()
     // const index = Math.floor(Math.random() * emptyCells.length)
     const bestMove = getBestMove(currentPlayer, emptyCells)
+    // const index = bestSpot()
     const cell = emptyCells[bestMove.index]
     console.log(bestMove)
     switch (currentPlayer) {
@@ -420,8 +419,8 @@ function aiMove() {
             cell.appendChild(oMark)
             break;
     }
-    if (checkWin(currentPlayer)) {
-        showWinMessage(currentPlayer)
+    if (checkWin(player.computer)) {
+        showWinMessage(player.computer)
         endGame(false)
         // gameover = true
     }
@@ -447,84 +446,204 @@ function aiMove() {
 }
 
 
-function getBestMove(player, emptyCells) {
+// function getBestMove(player, emptyCells,alpha = -Infinity, beta = Infinity) {
+//     let bestScore = player === 'cross' ? -Infinity : Infinity;
+//     let bestIndex = -1;
+
+//     for (let i = 0; i < emptyCells.length; i++) {
+//         const cell = emptyCells[i];
+//         // const index = parseInt(i)
+
+
+//         // Simulate the move
+//         cell.classList.add(`${player}-active`);
+//         const mark = document.createElement('img');
+//         mark.classList.add(player);
+//         mark.id = 'mark';
+//         mark.src = player === 'cross' ? './assets/icon-x.svg' : './assets/icon-o.svg';
+//         cell.appendChild(mark);
+
+//         // Calculate the score using the minimax algorithm
+//         const score = minimax(player === 'cross' ? 'circle' : 'cross', false, alpha, beta);
+
+//         cell.classList.remove(`${player}-active`);
+//         cell.removeChild(mark);
+
+//         if (
+//             (player === 'cross' && score > bestScore) ||
+//             (player === 'circle' && score < bestScore)
+//         ) {
+//             bestScore = score;
+//             bestIndex = i;
+//         }
+//         if (player === 'cross') {
+//             alpha = Math.max(alpha, bestScore);
+//         } else {
+//             beta = Math.min(beta, bestScore);
+//         }
+
+//         if (beta <= alpha) {
+//             break;
+//         }
+
+//     }
+
+//     return { index: bestIndex, score: bestScore };
+// }
+
+
+// function minimax(PLAYER, isMaximizing, depth) {
+//     let emptyCells = getEmptySpace()
+
+//     if (checkWin(player.playerOne)) {
+//         return -depth + 1
+//     }
+//     else if (checkWin(player.computer)) {
+//         return depth -1
+//     }
+//     if (emptyCells == 0) {
+//         return 0
+//     }
+
+//     let bestScore = isMaximizing ? -Infinity : Infinity;
+//     // let emptyCells = [...cells].filter((cell) => !cell.firstChild);
+
+//     for (let i = 0; i < emptyCells.length; i++) {
+
+//         const cell = emptyCells[i];
+//         cell.classList.add(`${PLAYER}-active`);
+//         const mark = document.createElement('img');
+//         mark.classList.add(PLAYER);
+//         mark.id = 'mark';
+//         mark.src = PLAYER === 'cross' ? './assets/icon-x.svg' : './assets/icon-o.svg';
+//         cell.append(mark);
+//         const score = minimax(PLAYER === 'cross' ? 'circle' : 'cross', !isMaximizing);
+
+//         cell.classList.remove(`${PLAYER}-active`);
+//         cell.removeChild(mark);
+
+//         if (isMaximizing) {
+//             bestScore = Math.max(score, bestScore);
+//         }
+//         else {
+//             bestScore = Math.min(score, bestScore);
+//         }
+//     }
+
+//     return bestScore
+// }
+
+function getBestMove(player, emptyCells, alpha = -Infinity, beta = Infinity) {
     let bestScore = player === 'cross' ? -Infinity : Infinity;
     let bestIndex = -1;
 
-    for (let i = 0; i < emptyCells.length; i++) {
-        const cell = emptyCells[i];
-        // const index = parseInt(i)
+    // Iterative deepening with increasing depth
+    for (let depth = 1; depth <= emptyCells.length; depth++) {
+        const result = minimax(player, true, depth, alpha, beta);
 
-        if (!cell.firstChild) {
-            // Simulate the move
-            cell.classList.add(`${player}-active`);
-            const mark = document.createElement('img');
-            mark.classList.add(player);
-            mark.id = 'mark';
-            mark.src = player === 'cross' ? './assets/icon-x.svg' : './assets/icon-o.svg';
-            cell.appendChild(mark);
-
-            // Calculate the score using the minimax algorithm
-            const score = minimax(player === 'cross' ? 'circle' : 'cross', false);
-
-            cell.classList.remove(`${player}-active`);
-            cell.removeChild(mark);
-
-            if (
-                (player === 'cross' && score > bestScore) ||
-                (player === 'circle' && score < bestScore)
-            ) {
-                bestScore = score;
-                bestIndex = i;
-            }
-
+        if (player === 'cross' && result.score > bestScore) {
+            bestScore = result.score;
+            bestIndex = result.index;
+        } else if (player === 'circle' && result.score < bestScore) {
+            bestScore = result.score;
+            bestIndex = result.index;
         }
     }
 
     return { index: bestIndex, score: bestScore };
 }
 
-function minimax(player, isMaximizing) {
-    let emptyCells = [...cells].filter((cell) => !cell.firstChild);
-
-    if (checkWin('cross')) {
-        return 1
-    }
-    else if (checkWin('circle')) {
-        return -1
-    }
-    if (emptyCells == 0) {
-        return 0
+function minimax(player, isMaximizingPlayer, depth, alpha, beta) {
+    const emptyCells = getEmptySpace()
+    // Base case: evaluate the score if the maximum depth is reached or the game is over
+    // if (depth === 0 || checkWin(player) || checkWin(player === 'cross' ? 'circle' : 'cross') || isDraw()) {
+    //     return {score :evaluateScore(player, depth)}
+    // }
+    if (depth == 0 || checkWin('cross') || checkWin('circle') || isDraw()) {
+        return { score: evaluateScore(player, depth) }
     }
 
-    let bestScore = isMaximizing ? -Infinity : Infinity;
-    // let emptyCells = [...cells].filter((cell) => !cell.firstChild);
+    let bestScore = isMaximizingPlayer ? -Infinity : Infinity;
+    let bestIndex = -1;
 
     for (let i = 0; i < emptyCells.length; i++) {
-
         const cell = emptyCells[i];
+
+        // Simulate the move
         cell.classList.add(`${player}-active`);
         const mark = document.createElement('img');
         mark.classList.add(player);
         mark.id = 'mark';
         mark.src = player === 'cross' ? './assets/icon-x.svg' : './assets/icon-o.svg';
         cell.appendChild(mark);
-        const score = minimax(player === 'cross' ? 'circle' : 'cross', !isMaximizing);
+
+        // Recursive call to the minimax function
+        const result = minimax(player === 'cross' ? 'circle' : 'cross', !isMaximizingPlayer, depth - 1, alpha, beta);
 
         cell.classList.remove(`${player}-active`);
         cell.removeChild(mark);
 
-        if (isMaximizing) {
-            bestScore = Math.max(score, bestScore);
+        if (isMaximizingPlayer) {
+            // Update the best score and index for the maximizing player
+            if (result.score > bestScore) {
+                bestScore = result.score;
+                bestIndex = i;
+            }
+            alpha = Math.max(alpha, bestScore);
+        } else {
+            // Update the best score and index for the minimizing player
+            if (result.score < bestScore) {
+                bestScore = result.score;
+                bestIndex = i;
+            }
+            beta = Math.min(beta, bestScore);
         }
-        else {
-            bestScore = Math.min(score, bestScore);
+
+        // Apply alpha-beta pruning
+        if (beta <= alpha) {
+            break;
         }
     }
 
-    return bestScore
+    return { index: bestIndex, score: bestScore };
 }
 
+function evaluateScore(player, depth) {
+    const emptyCells = getEmptySpace()
+    // Provide a heuristic evaluation score based on the game state and depth
+    if (checkWin(player)) {
+        return depth + 1; // Adjust the score based on depth to favor winning earlier
+    } else if (checkWin(player === 'cross' ? 'circle' : 'cross')) {
+        return -depth - 1; // Adjust the score based on depth to favor losing later
+    } else if (isDraw()) {
+        return 0; // The game is a draw
+    } else {
+        // Neither player has won yet, so we need to estimate the score based on the number of empty cells remaining
+        const emptyCellScore = emptyCells.length / 9;
+        return player === 'cross' ? emptyCellScore : -emptyCellScore;
+    }
+    // if(checkWin('circle')){
+    //     return depth+1
+    // }
+    // else if(checkWin('circle')){
+    //     return -depth -1
+    // }
+    // else if(emptyCells.length==0){
+    //     return 0
+    // }
+}
+
+
+
+function getEmptySpace() {
+    let EMPTY = [];
+    [...cells].filter(cell => {
+        if (!cell.firstChild) {
+            EMPTY.push(cell)
+        }
+    })
+    return EMPTY
+}
 
 function startGameWithCPU() {
     currentPlayer = player.playerOne
@@ -541,7 +660,7 @@ function startGameWithCPU() {
             currentPlayer = 'cross'
             setHoverState()
             getBoard();
-         
+
             turn(currentPlayer)
             break;
     }
@@ -550,14 +669,14 @@ function startGameWithCPU() {
 
 // function startGameWithCPU() {
 //     if (gameover) return;
-  
+
 //     vsComputer = true;
 //     toggleSelectionVsCPU();
-  
+
 //     currentPlayer = 'cross';
 //     setHoverState(currentPlayer);
 //     getBoard();
-  
+
 //     if (currentPlayer === player.computer) {
 //       // Computer's turn
 //       setTimeout(aiMove, 500);
@@ -568,7 +687,7 @@ function startGameWithCPU() {
 //       });
 //     }
 //   }
-  
+
 
 
 
