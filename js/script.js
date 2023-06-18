@@ -32,7 +32,7 @@ let gameData = new Array(9)
 const player = new Object
 let opponent
 
-currentPlayer = 'cross'
+let currentPlayer = 'cross'
 
 player.playerOne = 'circle'
 player.playerTwo = 'cross'
@@ -65,7 +65,7 @@ function getVersus() {
         vsComputer = true
         opponent = 'computer'
         changeMark()
-        startGameWithCPU(player, opponent)
+        startGameWithCPU()
     })
     vsPlayer.addEventListener('click', () => {
         document.getElementById('new-game-menu').style.display = 'none';
@@ -73,7 +73,7 @@ function getVersus() {
         vsComputer = false
         opponent = 'playerTwo'
         changeMark()
-        startGame(player, opponent)
+        startGame()
     })
 }
 // function to change mark from X to O
@@ -96,7 +96,7 @@ function changeMark() {
         document.querySelector('#o').style.fill = 'var(--dark-navy)'
         document.querySelector('#x').style.fill = 'var(--silver)'
         xButton.classList.remove('mark-style')
-        currentPlayer = 'circle'
+        currentPlayer = 'cross'
         player.playerOne = 'circle'
         player.playerTwo = 'cross'
         player.computer = 'circle'
@@ -153,10 +153,10 @@ function addTick(e) {
 
 // //  who goes next
 function turn(currentPlayer) {
-    if(vsComputer && currentPlayer=='circle'){
+    if (vsComputer && currentPlayer == 'circle') {
         setTimeout(aiMove, 500)
     }
-    else if(vsComputer && currentPlayer == 'cross'){
+    else if (vsComputer && currentPlayer == 'cross') {
         getBoard()
         setTimeout(aiMove, 500)
     }
@@ -327,28 +327,29 @@ function endGame(draw) {
 // // Next Round
 function nextRound() {
     newRound.addEventListener('click', () => {
+        gameData = new Array(9)
         container.classList.remove('show')
         roundMark.replaceChildren()
         cells.forEach(cell => {
-            cell.classList.remove('o-active')
-            cell.classList.remove('x-active')
             let firstChild = cell.firstChild
             if (firstChild) {
                 cell.removeChild(firstChild)
                 cell.classList.remove('o-active')
                 cell.classList.remove('x-active')
             }
-            updateRound()
-            if (vsComputer) {
-                startGameWithCPU()
-            }
-            else {
-                startGame()
-            }
+
         })
+        updateRound()
+        if (vsComputer) {
+            startGameWithCPU()
+        }
+        else {
+            startGame()
+        }
 
     })
 }
+
 
 function updateRound() {
     roundCount++
@@ -524,81 +525,31 @@ function getEmptySpace(gameData) {
     return EMPTY
 }
 
-// function startGameWithCPU() {
-//     // currentPlayer = 'cross'
-//     vsComputer = true
-//     toggleSelectionVsCPU()
-//     switch (currentPlayer) {
-//         case 'cross':
-//             currentPlayer = 'cross'
-//             setHoverState()
-//             getBoard();
 
-//             break;
-//         case 'circle':
-//             currentPlayer = 'circle'
-//             setHoverState()
-//             getBoard();
-//             turn(currentPlayer)
-//             break;
-//     }
-
-// }
 
 function startGameWithCPU() {
     vsComputer = true;
     toggleSelectionVsCPU();
-    console.log('1', player.playerOne)
-    console.log('2', player.computer)
+    // console.log('1', player.playerOne)
+    // console.log('2', player.computer)
     currentPlayer = player.playerOne
- // Set player.playerOne as the starting player
-    // switch(currentPlayer){
-    //     case 'cross':
-    //         getBoard()
-    //         break
-    //     case 'circle':
-    //         turn(currentPlayer)
-    // }
 
-    if(currentPlayer==='cross'){
+    if (currentPlayer === 'cross') {
+        setHoverState(currentPlayer)
         getBoard()
     }
-    else if(currentPlayer=== 'circle'){
-        currentPlayer= 'cross'
+    else if (currentPlayer === 'circle') {
+        currentPlayer = 'cross'
+        setHoverState(currentPlayer)
         turn(currentPlayer)
     }
 
 }
-//     getBoard();
-//     if (currentPlayer === player.playerOne) {
-//         getBoard()
-//     }else{
-//         // turn(currentPlayer)
-//         console.log('hey')
-//         getBoard()
-//     }
-// }
-
-// function startGameWithCPU(){
-//     vsComputer = true
-//     toggleSelectionVsCPU()
-//     currentPlayer = player.computer
-//     switch(currentPlayer){
-//         case 'cross':
-//             setHoverState(currentPlayer)
-//             turn(currentPlayer)
-//             getBoard
-//             break
-//         case 'circle':
-//             getBoard()
-//             turn(currentPlayer)
-//     }
-// }
 
 
-
-function startGame(player) {
+function startGame() {
     currentPlayer = 'cross'
+    setHoverState(currentPlayer)
     vsComputer = false
     toggleSelection()
     getBoard()

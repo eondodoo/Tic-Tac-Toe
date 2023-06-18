@@ -442,7 +442,6 @@ function endGame(draw) {
 
 // Next Round
 function nextRound() {
-    gameover = false
     newRound.addEventListener('click', () => {
         container.classList.remove('show')
         roundMark.replaceChildren()
