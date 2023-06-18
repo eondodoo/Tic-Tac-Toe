@@ -382,8 +382,6 @@ function aiMove() {
     const bestMove = bestSpot()
     const cell = document.getElementById(bestMove.id)
     gameData[bestMove.id] = currentPlayer
-
-    console.log(cell)
     switch (currentPlayer) {
         case 'cross':
             // if current player is X, append X immage as child 
@@ -505,17 +503,15 @@ function getEmptySpace(gameData) {
 function startGameWithCPU() {
     vsComputer = true;
     toggleSelectionVsCPU();
-    // console.log('1', player.playerOne)
-    // console.log('2', player.computer)
     currentPlayer = player.playerOne
+    setHoverState()
 
     if (currentPlayer === 'cross') {
-        setHoverState(currentPlayer)
         getBoard()
     }
     else if (currentPlayer === 'circle') {
-        currentPlayer = 'cross'
         setHoverState(currentPlayer)
+        currentPlayer = 'cross'
         turn(currentPlayer)
     }
 
