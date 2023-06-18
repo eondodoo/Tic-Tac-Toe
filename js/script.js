@@ -358,33 +358,8 @@ function updateRound() {
 // // Quit game
 function quitRound() {
     quit.addEventListener('click', () => {
-        xWins.innerHTML = 0
-        oWins.innerHTML = 0
-        tiesScore.innerHTML = 0
-        roundCount = 0
-        roundMark.replaceChildren()
-        container.classList.remove('show')
-        document.getElementById('new-game-menu').style.display = 'block';
-        document.getElementById('board').style.display = 'none';
-        cells.forEach(cell => {
-            if (cell.firstChild) {
-                let firstChild = cell.firstChild
-                if (firstChild) {
-                    cell.removeChild(firstChild)
-                    cell.classList.remove('o-active')
-                    cell.classList.remove('x-active')
-                }
-            }
-            currentPlayer = 'cross'
-            resetScore()
-        })
+        location.reload()
     })
-    if (vsComputer) {
-        // startGameWithCPU()
-    }
-    else {
-        startGame()
-    }
 }
 // // Reset score to zero
 function resetScore() {
