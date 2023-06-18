@@ -1,5 +1,4 @@
 const cells = document.querySelectorAll('.squares')
-const gameCells = ['', '', '', '', '', '', '', '', '']
 const board = document.getElementById('play-area')
 const quit = document.getElementById('quit')
 const infoDisplay = document.getElementById('info')
@@ -25,13 +24,16 @@ let xWinCount = 0
 let oWinCount = 0
 let tieCount = 0
 let roundCount = 1
-
-let p1 = 'o'
+let p1 = 'x'
 let p2 = 'o'
+
+let gameData = new Array(9)
 
 const player = new Object
 let opponent
+
 currentPlayer = 'cross'
+
 player.playerOne = 'circle'
 player.playerTwo = 'cross'
 player.computer = 'cross'
@@ -94,7 +96,7 @@ function changeMark() {
         document.querySelector('#o').style.fill = 'var(--dark-navy)'
         document.querySelector('#x').style.fill = 'var(--silver)'
         xButton.classList.remove('mark-style')
-        currentPlayer = 'cross'
+        currentPlayer = 'circle'
         player.playerOne = 'circle'
         player.playerTwo = 'cross'
         player.computer = 'circle'
@@ -105,6 +107,7 @@ function changeMark() {
 function addTick(e) {
     const cell = e.target
     setHoverState(currentPlayer)
+    gameData[cell.id] = currentPlayer
     switch (currentPlayer) {
         case 'cross':
             cell.classList.add('x-active')
@@ -124,12 +127,12 @@ function addTick(e) {
             break
     }
 
-    if (checkWin(currentPlayer)) {
+    if (checkWin(gameData, currentPlayer)) {
         endGame(false)
         showWinMessage(currentPlayer)
         // gameover = true
     }
-    else if (isDraw()) {
+    else if (isDraw(gameData)) {
         endGame(true)
         // gameover = true
     }
@@ -146,17 +149,16 @@ function addTick(e) {
         circlemark.style.display = 'none'
     }
     cell.removeEventListener('click', addTick)
-
 }
 
 // //  who goes next
 function turn(currentPlayer) {
-    if (vsComputer && currentPlayer === 'cross') {
-        setTimeout(aiMove, 500);
+    if(vsComputer && currentPlayer=='circle'){
+        setTimeout(aiMove, 500)
     }
-    else if (vsComputer && currentPlayer === 'circle') {
+    else if(vsComputer && currentPlayer == 'cross'){
         getBoard()
-        setTimeout(aiMove, 500);
+        setTimeout(aiMove, 500)
     }
 }
 
@@ -212,25 +214,33 @@ function cancelRestart() {
 
 
 // check draw
-function isDraw() {
-    return [...cells].every(cell => {
-        return cell.classList.contains('x-active') || cell.classList.contains('o-active')
-    })
+function isDraw(gameData) {
+    let boardFull = true
+    for (let i = 0; i < gameData.length; i++) {
+        boardFull = gameData[i] && boardFull
+    }
+    if (boardFull) {
+        return true
+    }
+    return false
 }
 
-
-function checkWin(player) {
-    for (const combo of winCombo) {
+function checkWin(gameData, player) {
+    for (let i = 0; i < winCombo.length; i++) {
         let won = true;
-        for (const index of combo) {
-            won = cells[index].firstChild?.classList.contains(player) && won;
+        for (let j = 0; j < winCombo[i].length; j++) {
+            if (gameData[winCombo[i][j]] !== player) {
+                won = false;
+                break;
+            }
         }
         if (won) {
-            return true; // Return true if a win is found
+            return true;
         }
     }
-    return false; // Return false if no win is found
+    return false;
 }
+
 
 function showWinMessage(player) {
     container.classList.add('show');
@@ -249,7 +259,7 @@ function showWinMessage(player) {
         }
         return true
     } else if (player == 'circle' && p2 === 'o' || player == 'cross' && p2 === 'x') {
-        notice.innerText = player2.innerHTML.includes('CPU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
+        notice.innerText = player2.innerHTML.includes('YOU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
         if (player === 'circle') {
             oWinCount++;
             oWins.innerHTML = oWinCount;
@@ -387,18 +397,17 @@ function resetScore() {
 }
 
 function bestSpot() {
-    return minimax(player.computer).id
+    return minimax(gameData, player.computer)
 }
 
 
 function aiMove() {
     setHoverState(currentPlayer)
-    const emptyCells = getEmptySpace()
-    // const index = Math.floor(Math.random() * emptyCells.length)
-    const bestMove = getBestMove(currentPlayer, emptyCells)
-    // const index = bestSpot()
-    const cell = emptyCells[bestMove.index]
-    console.log(bestMove)
+    const bestMove = bestSpot()
+    const cell = document.getElementById(bestMove.id)
+    gameData[bestMove.id] = currentPlayer
+
+    console.log(cell)
     switch (currentPlayer) {
         case 'cross':
             // if current player is X, append X immage as child 
@@ -419,20 +428,18 @@ function aiMove() {
             cell.appendChild(oMark)
             break;
     }
-    if (checkWin(player.computer)) {
+    if (checkWin(gameData, player.computer)) {
         showWinMessage(player.computer)
         endGame(false)
         // gameover = true
     }
-    else if (isDraw()) {
+    else if (isDraw(gameData)) {
         endGame(true)
         // gameover = true
     }
     else {
         currentPlayer = currentPlayer === player.computer ? player.playerOne : player.computer
-        // turn(currentPlayer)
     }
-    // currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle'
     if (currentPlayer == 'circle') {
         circlemark.style.display = 'block'
         crossmark.style.display = 'none'
@@ -445,249 +452,148 @@ function aiMove() {
     cell.removeEventListener('click', addTick)
 }
 
+function minimax(gameData, PLAYER) {
+    var emptyCells = getEmptySpace(gameData)
 
-// function getBestMove(player, emptyCells,alpha = -Infinity, beta = Infinity) {
-//     let bestScore = player === 'cross' ? -Infinity : Infinity;
-//     let bestIndex = -1;
-
-//     for (let i = 0; i < emptyCells.length; i++) {
-//         const cell = emptyCells[i];
-//         // const index = parseInt(i)
-
-
-//         // Simulate the move
-//         cell.classList.add(`${player}-active`);
-//         const mark = document.createElement('img');
-//         mark.classList.add(player);
-//         mark.id = 'mark';
-//         mark.src = player === 'cross' ? './assets/icon-x.svg' : './assets/icon-o.svg';
-//         cell.appendChild(mark);
-
-//         // Calculate the score using the minimax algorithm
-//         const score = minimax(player === 'cross' ? 'circle' : 'cross', false, alpha, beta);
-
-//         cell.classList.remove(`${player}-active`);
-//         cell.removeChild(mark);
-
-//         if (
-//             (player === 'cross' && score > bestScore) ||
-//             (player === 'circle' && score < bestScore)
-//         ) {
-//             bestScore = score;
-//             bestIndex = i;
-//         }
-//         if (player === 'cross') {
-//             alpha = Math.max(alpha, bestScore);
-//         } else {
-//             beta = Math.min(beta, bestScore);
-//         }
-
-//         if (beta <= alpha) {
-//             break;
-//         }
-
-//     }
-
-//     return { index: bestIndex, score: bestScore };
-// }
-
-
-// function minimax(PLAYER, isMaximizing, depth) {
-//     let emptyCells = getEmptySpace()
-
-//     if (checkWin(player.playerOne)) {
-//         return -depth + 1
-//     }
-//     else if (checkWin(player.computer)) {
-//         return depth -1
-//     }
-//     if (emptyCells == 0) {
-//         return 0
-//     }
-
-//     let bestScore = isMaximizing ? -Infinity : Infinity;
-//     // let emptyCells = [...cells].filter((cell) => !cell.firstChild);
-
-//     for (let i = 0; i < emptyCells.length; i++) {
-
-//         const cell = emptyCells[i];
-//         cell.classList.add(`${PLAYER}-active`);
-//         const mark = document.createElement('img');
-//         mark.classList.add(PLAYER);
-//         mark.id = 'mark';
-//         mark.src = PLAYER === 'cross' ? './assets/icon-x.svg' : './assets/icon-o.svg';
-//         cell.append(mark);
-//         const score = minimax(PLAYER === 'cross' ? 'circle' : 'cross', !isMaximizing);
-
-//         cell.classList.remove(`${PLAYER}-active`);
-//         cell.removeChild(mark);
-
-//         if (isMaximizing) {
-//             bestScore = Math.max(score, bestScore);
-//         }
-//         else {
-//             bestScore = Math.min(score, bestScore);
-//         }
-//     }
-
-//     return bestScore
-// }
-
-function getBestMove(player, emptyCells, alpha = -Infinity, beta = Infinity) {
-    let bestScore = player === 'cross' ? -Infinity : Infinity;
-    let bestIndex = -1;
-
-    // Iterative deepening with increasing depth
-    for (let depth = 1; depth <= emptyCells.length; depth++) {
-        const result = minimax(player, true, depth, alpha, beta);
-
-        if (player === 'cross' && result.score > bestScore) {
-            bestScore = result.score;
-            bestIndex = result.index;
-        } else if (player === 'circle' && result.score < bestScore) {
-            bestScore = result.score;
-            bestIndex = result.index;
-        }
+    if (checkWin(gameData, player.playerOne)) {
+        return { score: -1 };
+    }
+    else if (checkWin(gameData, player.computer)) {
+        return { score: 1 };
+    }
+    else if (isDraw(gameData)) {
+        return { score: 0 };
     }
 
-    return { index: bestIndex, score: bestScore };
-}
+    let moves = [];
 
-function minimax(player, isMaximizingPlayer, depth, alpha, beta) {
-    const emptyCells = getEmptySpace()
-    // Base case: evaluate the score if the maximum depth is reached or the game is over
-    // if (depth === 0 || checkWin(player) || checkWin(player === 'cross' ? 'circle' : 'cross') || isDraw()) {
-    //     return {score :evaluateScore(player, depth)}
-    // }
-    if (depth == 0 || checkWin('cross') || checkWin('circle') || isDraw()) {
-        return { score: evaluateScore(player, depth) }
-    }
-
-    let bestScore = isMaximizingPlayer ? -Infinity : Infinity;
-    let bestIndex = -1;
 
     for (let i = 0; i < emptyCells.length; i++) {
-        const cell = emptyCells[i];
 
-        // Simulate the move
-        cell.classList.add(`${player}-active`);
-        const mark = document.createElement('img');
-        mark.classList.add(player);
-        mark.id = 'mark';
-        mark.src = player === 'cross' ? './assets/icon-x.svg' : './assets/icon-o.svg';
-        cell.appendChild(mark);
+        let id = emptyCells[i]
 
-        // Recursive call to the minimax function
-        const result = minimax(player === 'cross' ? 'circle' : 'cross', !isMaximizingPlayer, depth - 1, alpha, beta);
+        let defaultBoard = gameData[id]
 
-        cell.classList.remove(`${player}-active`);
-        cell.removeChild(mark);
+        gameData[id] = PLAYER
 
-        if (isMaximizingPlayer) {
-            // Update the best score and index for the maximizing player
-            if (result.score > bestScore) {
-                bestScore = result.score;
-                bestIndex = i;
-            }
-            alpha = Math.max(alpha, bestScore);
+        let move = {};
+        move.id = id;
+
+        if (PLAYER === player.computer) {
+            move.score = minimax(gameData, player.playerOne).score;
         } else {
-            // Update the best score and index for the minimizing player
-            if (result.score < bestScore) {
-                bestScore = result.score;
-                bestIndex = i;
+            move.score = minimax(gameData, player.computer).score;
+        }
+
+        gameData[id] = defaultBoard
+        moves.push(move)
+
+    }
+
+    var bestMove;
+    if (PLAYER === player.computer) {
+        var bestScore = -Infinity;
+        for (var i = 0; i < moves.length; i++) {
+            if (moves[i].score > bestScore) {
+                bestScore = moves[i].score;
+                bestMove = moves[i];
             }
-            beta = Math.min(beta, bestScore);
         }
-
-        // Apply alpha-beta pruning
-        if (beta <= alpha) {
-            break;
-        }
-    }
-
-    return { index: bestIndex, score: bestScore };
-}
-
-function evaluateScore(player, depth) {
-    const emptyCells = getEmptySpace()
-    // Provide a heuristic evaluation score based on the game state and depth
-    if (checkWin(player)) {
-        return depth + 1; // Adjust the score based on depth to favor winning earlier
-    } else if (checkWin(player === 'cross' ? 'circle' : 'cross')) {
-        return -depth - 1; // Adjust the score based on depth to favor losing later
-    } else if (isDraw()) {
-        return 0; // The game is a draw
     } else {
-        // Neither player has won yet, so we need to estimate the score based on the number of empty cells remaining
-        const emptyCellScore = emptyCells.length / 9;
-        return player === 'cross' ? emptyCellScore : -emptyCellScore;
+        var bestScore = Infinity;
+        for (var i = 0; i < moves.length; i++) {
+            if (moves[i].score < bestScore) {
+                bestScore = moves[i].score;
+                bestMove = moves[i];
+            }
+        }
     }
-    // if(checkWin('circle')){
-    //     return depth+1
-    // }
-    // else if(checkWin('circle')){
-    //     return -depth -1
-    // }
-    // else if(emptyCells.length==0){
-    //     return 0
-    // }
+
+    return bestMove;
 }
 
 
-
-function getEmptySpace() {
+function getEmptySpace(gameData) {
     let EMPTY = [];
-    [...cells].filter(cell => {
-        if (!cell.firstChild) {
-            EMPTY.push(cell)
+    for (let id = 0; id < gameData.length; id++) {
+        if (!gameData[id]) {
+            EMPTY.push(id)
         }
-    })
+    }
+
     return EMPTY
 }
 
+// function startGameWithCPU() {
+//     // currentPlayer = 'cross'
+//     vsComputer = true
+//     toggleSelectionVsCPU()
+//     switch (currentPlayer) {
+//         case 'cross':
+//             currentPlayer = 'cross'
+//             setHoverState()
+//             getBoard();
+
+//             break;
+//         case 'circle':
+//             currentPlayer = 'circle'
+//             setHoverState()
+//             getBoard();
+//             turn(currentPlayer)
+//             break;
+//     }
+
+// }
+
 function startGameWithCPU() {
+    vsComputer = true;
+    toggleSelectionVsCPU();
+    console.log('1', player.playerOne)
+    console.log('2', player.computer)
     currentPlayer = player.playerOne
-    vsComputer = true
-    toggleSelectionVsCPU()
-    switch (currentPlayer) {
-        case 'cross':
-            currentPlayer = 'cross'
-            setHoverState()
-            getBoard();
+ // Set player.playerOne as the starting player
+    // switch(currentPlayer){
+    //     case 'cross':
+    //         getBoard()
+    //         break
+    //     case 'circle':
+    //         turn(currentPlayer)
+    // }
 
-            break;
-        case 'circle':
-            currentPlayer = 'cross'
-            setHoverState()
-            getBoard();
-
-            turn(currentPlayer)
-            break;
+    if(currentPlayer==='cross'){
+        getBoard()
+    }
+    else if(currentPlayer=== 'circle'){
+        currentPlayer= 'cross'
+        turn(currentPlayer)
     }
 
 }
-
-// function startGameWithCPU() {
-//     if (gameover) return;
-
-//     vsComputer = true;
-//     toggleSelectionVsCPU();
-
-//     currentPlayer = 'cross';
-//     setHoverState(currentPlayer);
 //     getBoard();
-
-//     if (currentPlayer === player.computer) {
-//       // Computer's turn
-//       setTimeout(aiMove, 500);
-//     } else {
-//       // Player's turn
-//       cells.forEach(cell => {
-//         cell.addEventListener('click', addTick);
-//       });
+//     if (currentPlayer === player.playerOne) {
+//         getBoard()
+//     }else{
+//         // turn(currentPlayer)
+//         console.log('hey')
+//         getBoard()
 //     }
-//   }
+// }
 
+// function startGameWithCPU(){
+//     vsComputer = true
+//     toggleSelectionVsCPU()
+//     currentPlayer = player.computer
+//     switch(currentPlayer){
+//         case 'cross':
+//             setHoverState(currentPlayer)
+//             turn(currentPlayer)
+//             getBoard
+//             break
+//         case 'circle':
+//             getBoard()
+//             turn(currentPlayer)
+//     }
+// }
 
 
 

@@ -675,7 +675,7 @@ function startGameWithCPU() {
 
             break;
         case 'circle':
-            currentPlayer = 'cross'
+            currentPlayer = 'circle'
             setHoverState()
             getBoard();
             // cells.forEach(cell => {
