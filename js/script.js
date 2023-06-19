@@ -244,8 +244,11 @@ function checkWin(gameData, player) {
 
 function showWinMessage(player) {
     container.classList.add('show');
-    markImg.src = player === 'circle' ? './assets/icon-o.svg' : './assets/icon-x.svg';
-    roundMark.appendChild(markImg);
+    const src = player === 'circle' ? './assets/icon-o.svg' : './assets/icon-x.svg';
+    // roundMark.appendChild(markImg);
+
+    // winningText.innerHTML = `<div id="round-mark">{roundMark.appendChild(markImg)}</div>`
+    winningText.innerHTML = `<img src=${src} /> takes the round`
     winningText.style.color = player === 'circle' ? 'var(--light-yellow)' : 'var(--light-blue)';
 
     if (player == 'circle' && p1 === 'o' || player === 'cross' && p1 === 'x') {
@@ -259,7 +262,7 @@ function showWinMessage(player) {
         }
         return true
     } else if (player == 'circle' && p2 === 'o' || player == 'cross' && p2 === 'x') {
-        notice.innerText = player2.innerHTML.includes('YOU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
+        notice.innerText = player2.innerHTML.includes('CPU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
         if (player === 'circle') {
             oWinCount++;
             oWins.innerHTML = oWinCount;
@@ -329,7 +332,9 @@ function nextRound() {
     newRound.addEventListener('click', () => {
         gameData = new Array(9)
         container.classList.remove('show')
-        roundMark.replaceChildren()
+        // roundMark.replaceChildren()
+        // winningText.innerText = ''
+
         cells.forEach(cell => {
             let firstChild = cell.firstChild
             if (firstChild) {
