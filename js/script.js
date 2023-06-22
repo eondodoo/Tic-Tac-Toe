@@ -106,13 +106,12 @@ function changeMark() {
 
 function addTick(e) {
     const cell = e.target
-    setHoverState(currentPlayer)
     gameData[cell.id] = currentPlayer
     switch (currentPlayer) {
         case 'cross':
             cell.classList.add('x-active')
             const xMark = document.createElement('img')
-            xMark.classList.add(currentPlayer)
+            xMark.classList.add('currentPlayer')
             xMark.id = ('mark')
             xMark.src = './assets/icon-x.svg';
             e.target.appendChild(xMark)
@@ -127,6 +126,7 @@ function addTick(e) {
             break
     }
 
+    setHoverState(currentPlayer)
     if (checkWin(gameData, currentPlayer)) {
         endGame(false)
         showWinMessage(currentPlayer)
@@ -151,6 +151,7 @@ function addTick(e) {
     cell.removeEventListener('click', addTick)
 }
 
+
 // //  who goes next
 function turn(currentPlayer) {
     if (vsComputer && currentPlayer == 'circle') {
@@ -162,11 +163,11 @@ function turn(currentPlayer) {
     }
 }
 
-// // Hover States function
+
+// Hover States function
 function setHoverState(mark) {
     square.classList.remove('circle');
     square.classList.remove('cross');
-
     if (mark == 'cross') {
         square.classList.add('circle')
     }
@@ -174,6 +175,7 @@ function setHoverState(mark) {
         square.classList.add('cross')
     }
 }
+
 // // restart function
 function resetBoard() {
     const restartBoard = document.getElementById('restart-board')
@@ -242,27 +244,58 @@ function checkWin(gameData, player) {
 }
 
 
+// function showWinMessage(player) {
+//     container.classList.add('show');
+//     const src = player === 'circle' ? './assets/icon-o.svg' : './assets/icon-x.svg';
+//     // roundMark.appendChild(markImg);
+
+//     // winningText.innerHTML = `<div id="round-mark">{roundMark.appendChild(markImg)}</div>`
+//     winningText.innerHTML = `<img src=${src} /> takes the round`
+//     winningText.style.color = player === 'circle' ? 'var(--light-yellow)' : 'var(--light-blue)';
+
+//     if (player == 'circle' && p1 === 'o' || player === 'cross' && p1 === 'x') {
+//         notice.innerText = player1.innerHTML.includes('YOU') ? 'YOU WIN' : 'PLAYER 1 WINS';
+//         if (player == 'circle') {
+//             oWinCount++;
+//             oWins.innerHTML = oWinCount;
+//         } else {
+//             xWinCount++;
+//             xWins.innerHTML = xWinCount;
+//         }
+//         return true
+//     } else if (player == 'circle' && p2 === 'o' || player == 'cross' && p2 === 'x') {
+//         notice.innerText = player2.innerHTML.includes('CPU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
+//         if (player === 'circle') {
+//             oWinCount++;
+//             oWins.innerHTML = oWinCount;
+//         } else {
+//             xWinCount++;
+//             xWins.innerHTML = xWinCount;
+//         }
+//         return true
+//     }
+
+//     return true;
+// }
+
 function showWinMessage(player) {
     container.classList.add('show');
     const src = player === 'circle' ? './assets/icon-o.svg' : './assets/icon-x.svg';
-    // roundMark.appendChild(markImg);
 
-    // winningText.innerHTML = `<div id="round-mark">{roundMark.appendChild(markImg)}</div>`
-    winningText.innerHTML = `<img src=${src} /> takes the round`
+    winningText.innerHTML = `<img src=${src} /> takes the round`;
     winningText.style.color = player === 'circle' ? 'var(--light-yellow)' : 'var(--light-blue)';
 
-    if (player == 'circle' && p1 === 'o' || player === 'cross' && p1 === 'x') {
-        notice.innerText = player1.innerHTML.includes('YOU') ? 'YOU WIN' : 'PLAYER 1 WINS';
-        if (player == 'circle') {
-            oWinCount++;
-            oWins.innerHTML = oWinCount;
-        } else {
-            xWinCount++;
-            xWins.innerHTML = xWinCount;
+    if ((player === 'circle' && p1 === 'o') || (player === 'cross' && p1 === 'x')) {
+        if (player1.innerHTML.includes('YOU')) {
+            notice.innerText = 'YOU WIN';
+
+        } else if (player2.innerHTML.includes('YOU')) {
+            notice.innerText = 'YOU WIN'
         }
-        return true
-    } else if (player == 'circle' && p2 === 'o' || player == 'cross' && p2 === 'x') {
-        notice.innerText = player2.innerHTML.includes('CPU') ? 'OH NO, YOU LOST' : 'PLAYER 2 WINS';
+        else {
+            notice.innerText = 'PLAYER 1 WINS';
+        }
+
         if (player === 'circle') {
             oWinCount++;
             oWins.innerHTML = oWinCount;
@@ -270,7 +303,28 @@ function showWinMessage(player) {
             xWinCount++;
             xWins.innerHTML = xWinCount;
         }
-        return true
+
+        return true;
+    } else if ((player === 'circle' && p2 === 'o') || (player === 'cross' && p2 === 'x')) {
+        if (player1.innerHTML.includes('CPU')) {
+            notice.innerText = 'OH NO, YOU LOST';
+
+        } else if (player2.innerHTML.includes('CPU')) {
+            notice.innerText = 'OH NO, YOU LOST';
+        }
+        else {
+            notice.innerText = 'PLAYER 2 WINS';
+        }
+
+        if (player === 'circle') {
+            oWinCount++;
+            oWins.innerHTML = oWinCount;
+        } else {
+            xWinCount++;
+            xWins.innerHTML = xWinCount;
+        }
+
+        return true;
     }
 
     return true;
@@ -525,12 +579,13 @@ function startGameWithCPU() {
 
 function startGame() {
     currentPlayer = 'cross'
-    setHoverState(currentPlayer)
     vsComputer = false
+    setHoverState()
     toggleSelection()
     getBoard()
 
 }
+
 function main() {
     getVersus()
     changeMark()
